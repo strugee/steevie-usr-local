@@ -1,6 +1,11 @@
 #!/bin/sh
 # TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
 
+if [ $(id -u) -ne 0 ]; then
+	echo 'renew-letsencrypt: not invoked as root; bailing'
+	exit 1
+fi
+
 MAIN_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)
 MAIL_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
 

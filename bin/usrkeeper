@@ -1,0 +1,5 @@
+#!/bin/sh
+
+firstarg=$1
+shift
+exec etckeeper $firstarg -d /usr/local/ $@

@@ -1,0 +1,21 @@
+#!/bin/bash
+cd /srv/http/huginn
+# We use the same Ruby as Huginn
+source /srv/http/huginn/.rvm/scripts/rvm
+export rvmsudo_secure_path=1
+rvm use 2.3.0
+# TODO: adjust sudoers for this
+export RAILS_ENV=production
+progname=$(basename $0)
+bail() {
+        # TODO: reset perms here?
+        echo $progname: $1 >&2
+        exit $2
+# TODO: dump the db, take a snapshot
+if chown -R huginn:huginn .; then
+        git status
+        printf 'Given the above git status, please confirm upgrade [Return] '
+        read -n 1 key
+        if systemctl stop huginn-jobs@5200.service && systemctl stop apache2.service; then
+                true
+        else

@@ -1,0 +1,48 @@
+#!/bin/sh
+# TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
+
+MAIN_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)
+MAIL_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
+
+etckeeper commit "Commit changes prior to renew-letsencrypt run"
+
+echo "Stopping Apache, pump.io, GitLab Nginx and Sandstorm."
+if systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm; then
+        echo "Invoking Let's Encrypt."
+        if letsencrypt renew --noninteractive; then
+                echo "Renewal succeeded."
+                echo "Fixing Mosquitto permissions."
+                for i in /etc/letsencrypt/live/mqtt.strugee.net/*; do chgrp mosquitto $(readlink -e $i); done
+        else
+                echo "Failed to renew some certificates. Mailing root."
+                echo "Execution of \`letsencrypt renew\` failed while renewing Let's Encrypt certificates.\n\nThis may indicate a misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to execute \`letsencrypt renew\`" root
+	fi
+else
+        echo "Stopping services failed. This probably indicates a serious misconfiguration."
+        echo "Mailing root."
+        echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io && gitlab-ctl stop nginx && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io, GitLab Nginx or Sandstorm" root
+fi
+
+echo "Unconditionally restarting Apache."
+systemctl start apache2
+echo "Unconditionally restarting pump.io."
+systemctl start pump.io@mongodb
+echo "Unconditionally restarting GitLab Nginx."
+gitlab-ctl start nginx
+echo "Unconditionally restarting Sandstorm."
+systemctl start sandstorm
+
+if [ $MAIN_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
+	sudo cat /etc/letsencrypt/live/strugee.net/{privkey,fullchain}.pem > /etc/ejabberd/ejabberd.pem
+	echo "Restarting ejabberd due to updated certificate."
+	systemctl restart ejabberd
+fi
+
+if [ $MAIL_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem) ]; then
+	echo "Restarting Postfix due to updated certificate."
+	systemctl restart postfix
+	echo "Restarting Dovecot due to updated certificate."
+	systemctl restart dovecot
+fi
+
+etckeeper commit "Renew and rebuild TLS certificates"

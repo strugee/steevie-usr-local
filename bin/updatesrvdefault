@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /srv/http/default
+git pull --rebase --verify-signatures

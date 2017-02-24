@@ -2,4 +2,14 @@
 
 firstarg=$1
 shift
+
+# We handle pushes specially so the invoking user pushes instead of root
+# This allows the use of SSH keys.
+if [ $firstarg = 'vcs' ] && [ $1 = 'push' ]; then
+	cd /usr/local
+	chown -R $SUDO_USER:$SUDO_USER .git
+	sudo -u $SUDO_USER etckeeper $firstarg -d /usr/local/ $@
+	exec chown -R root:staff .git
+fi
+
 exec etckeeper $firstarg -d /usr/local/ $@

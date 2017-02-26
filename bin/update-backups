@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Run daily by cron
+
+do_backup() {
+	output="$(btrfs subvolume snapshot -r / /var/backups/system/main/root-$1$(date +%s))"
+	if [ $? != 0 ]; then
+		# Spit out the output on failure to trigger mail to root
+		echo "$output"
+	fi
+}
+
+if [ $(date +%d) = 01 ]; then
+	# Monthly backup
+	do_backup
+elif [ $(date +%A) = Sunday ]; then
+	# Weekly backup
+	do_backup weekly-
+	# TODO: clean up weeklies
+else
+	# Daily backup
+	do_backup daily-
+	# TODO: clean up dailies
+fi

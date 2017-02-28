@@ -39,7 +39,7 @@ echo "Unconditionally restarting Sandstorm."
 systemctl start sandstorm
 
 if [ $MAIN_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
-	sudo cat /etc/letsencrypt/live/strugee.net/{privkey,fullchain}.pem > /etc/ejabberd/ejabberd.pem
+	generate-ejabberd-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd
 fi

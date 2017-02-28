@@ -8,7 +8,7 @@ fi
 
 MAIN_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)
 MAIL_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
-ZNC_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
+ZNC_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem)
 
 etckeeper commit "Commit changes prior to renew-letsencrypt run"
 
@@ -38,20 +38,20 @@ gitlab-ctl start nginx
 echo "Unconditionally restarting Sandstorm."
 systemctl start sandstorm
 
-if [ $MAIN_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
+if [ $MAIN_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
 	generate-ejabberd-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd
 fi
 
-if [ $MAIL_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem) ]; then
+if [ $MAIL_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem) ]; then
 	echo "Restarting Postfix due to updated certificate."
 	systemctl restart postfix
 	echo "Restarting Dovecot due to updated certificate."
 	systemctl restart dovecot
 fi
 
-if [ $ZNC_CERT_INODE = $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem) ]; then
+if [ $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem) ]; then
 	echo "Rebuilding ZNC certficates due to updated certificate."
 	generate-znc-bundle
 	echo "Restarting ZNC."

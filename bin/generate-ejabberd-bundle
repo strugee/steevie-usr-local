@@ -1,0 +1,3 @@
+#!/bin/sh
+
+cat /etc/letsencrypt/live/strugee.net/privkey.pem /etc/letsencrypt/live/strugee.net/fullchain.pem > /etc/ejabberd/ejabberd.pem

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cat /etc/letsencrypt/live/znc.strugee.net/privkey.pem /etc/letsencrypt/live/znc.strugee.net/fullchain.pem > /var/lib/znc/.znc/znc.pem
+chown root:znc /var/lib/znc/.znc/znc.pem
+chmod 0640 /var/lib/znc/.znc/znc.pem

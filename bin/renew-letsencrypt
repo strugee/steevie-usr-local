@@ -6,37 +6,51 @@ if [ $(id -u) -ne 0 ]; then
 	exit 1
 fi
 
+# Internal
+
+if [ "$1" = _pre_hook ]; then
+	echo "Stopping Apache, pump.io, GitLab Nginx and Sandstorm."
+	if systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm; then
+		exit 0
+	else
+		echo "Stopping services failed. This probably indicates a serious misconfiguration."
+		echo "Mailing root."
+		echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io, GitLab Nginx or Sandstorm" root
+		exit 1
+	fi
+fi
+
+if [ "$1" = _post_hook ]; then
+	FAILED=0
+	echo "Unconditionally restarting Apache."
+	systemctl start apache2 || FAILED=1
+	echo "Unconditionally restarting pump.io."
+	systemctl start pump.io@mongodb || FAILED=1
+	echo "Unconditionally restarting GitLab Nginx."
+	gitlab-ctl start nginx || FAILED=1
+	echo "Unconditionally restarting Sandstorm."
+	systemctl start sandstorm || FAILED=1
+
+	exit $FAILED
+fi
+
 MAIN_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)
 MAIL_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
 ZNC_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem)
 
 etckeeper commit "Commit changes prior to renew-letsencrypt run"
 
-echo "Stopping Apache, pump.io, GitLab Nginx and Sandstorm."
-if systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm; then
-        echo "Invoking Let's Encrypt."
-        if letsencrypt renew --noninteractive; then
-                echo "Renewal succeeded."
-                echo "Fixing Mosquitto permissions."
-                for i in /etc/letsencrypt/live/mqtt.strugee.net/*; do chgrp mosquitto $(readlink -e $i); done
-        else
-                echo "Failed to renew some certificates. Mailing root."
-                echo "Execution of \`letsencrypt renew\` failed while renewing Let's Encrypt certificates.\n\nThis may indicate a misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to execute \`letsencrypt renew\`" root
-	fi
+echo "Invoking Let's Encrypt."
+if letsencrypt renew --noninteractive --pre-hook "$0 _pre_hook" --post-hook "$0 _post_hook"; then
+	echo "Renewal succeeded."
+	echo "Fixing Mosquitto permissions."
+	for i in /etc/letsencrypt/live/mqtt.strugee.net/*; do chgrp mosquitto $(readlink -e $i); done
 else
-        echo "Stopping services failed. This probably indicates a serious misconfiguration."
-        echo "Mailing root."
-        echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io && gitlab-ctl stop nginx && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io, GitLab Nginx or Sandstorm" root
+	echo "Failed to renew some certificates. Mailing root."
+	echo "Execution of \`letsencrypt renew\` failed while renewing Let's Encrypt certificates.\n\nThis may indicate a misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to execute \`letsencrypt renew\`" root
 fi
 
-echo "Unconditionally restarting Apache."
-systemctl start apache2
-echo "Unconditionally restarting pump.io."
-systemctl start pump.io@mongodb
-echo "Unconditionally restarting GitLab Nginx."
-gitlab-ctl start nginx
-echo "Unconditionally restarting Sandstorm."
-systemctl start sandstorm
+# TODO: consider migrating this to --renew-hook
 
 if [ $MAIN_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
 	generate-ejabberd-bundle

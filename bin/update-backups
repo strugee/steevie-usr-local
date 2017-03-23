@@ -20,5 +20,6 @@ elif [ $(date +%A) = Sunday ]; then
 else
 	# Daily backup
 	do_backup daily-
-	# TODO: clean up dailies
+	# TODO should we be using `ls` here?
+	ls -d /var/backups/system/main/root-daily-* | head --lines=-7 | xargs -n 1 sudo btrfs subvolume delete
 fi

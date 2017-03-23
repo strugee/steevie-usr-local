@@ -1,0 +1,16 @@
+#!/bin/sh -
+journalctl \
+| grep -v 'sudo\[.*\]: alex : TTY=.* ; PWD=/.* ; USER=root ;' \ # Sudo
+| grep -v 'pam_unix(sudo:session): session closed for user .*' \
+| grep -v 'pam_unix(sudo:session): session opened for user .* by alex(uid=0)' \
+# Cron \
+| grep -v 'steevie CRON\[.*\]' \ # Cron
+# Mail \
+| grep -v 'opendkim[.*]: .{12}: s=.* d=.*' \
+| grep -v 'opendkim[.*]: .{12}: bad signature data' \
+| grep -v 'postfix/qmgr[.*]: .{12}: from=<.*@.*>, size=.*, nrcpt=. (queue active)' \
+| grep -v 'dovecot[.*]: lda(.*@.*): sieve: msgid=<.*@.*>: stored mail into mailbox \'.*\' \
+#steevie postfix/pipe[16203]: C6A031CC7431: to=<alex@strugee.net>, relay=dovecot, delay=1.3, delays=1.2/0.01/0/0.08, dsn=2.0.0, status=sent (delivered via dovecot service)
+#steevie postfix/qmgr[38600]: C6A031CC7431: removed
+#steevie postfix/smtpd[16193]: disconnect from lists.gnu.org[208.118.235.17]
+| grep -v 'Disconnected in IDLE'

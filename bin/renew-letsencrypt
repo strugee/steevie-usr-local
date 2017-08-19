@@ -9,13 +9,13 @@ fi
 # Internal
 
 if [ "$1" = _pre_hook ]; then
-	echo "Stopping Apache, pump.io, GitLab Nginx and Sandstorm."
-	if systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm; then
+	echo "Stopping Apache, pump.io and Sandstorm."
+	if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm; then
 		exit 0
 	else
 		echo "Stopping services failed. This probably indicates a serious misconfiguration."
 		echo "Mailing root."
-		echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && gitlab-ctl stop nginx && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io, GitLab Nginx or Sandstorm" root
+		echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io or Sandstorm" root
 		exit 1
 	fi
 fi
@@ -26,8 +26,6 @@ if [ "$1" = _post_hook ]; then
 	systemctl start apache2 || FAILED=1
 	echo "Unconditionally restarting pump.io."
 	systemctl start pump.io@mongodb || FAILED=1
-	echo "Unconditionally restarting GitLab Nginx."
-	gitlab-ctl start nginx || FAILED=1
 	echo "Unconditionally restarting Sandstorm."
 	systemctl start sandstorm || FAILED=1
 

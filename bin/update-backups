@@ -16,7 +16,9 @@ if [ $(date +%d) = 01 ]; then
 elif [ $(date +%A) = Sunday ]; then
 	# Weekly backup
 	do_backup weekly-
-	# TODO: clean up weeklies
+	# This keeps four weeks of backups, which is technically different than a month. But honestly, who cares. This is Good Enough™.
+	# TODO should we be using `ls` here?
+	ls -d /var/backups/system/main/root-weekly-* | head --lines=-4 | xargs -n 1 sudo btrfs subvolume delete
 else
 	# Daily backup
 	do_backup daily-

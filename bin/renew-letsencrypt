@@ -70,8 +70,7 @@ echo "debug: comparing $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc
 if [ $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem) ]; then
 	echo "Rebuilding ZNC certficates due to updated certificate."
 	generate-znc-bundle
-	echo "Restarting ZNC."
-	systemctl restart znc
+	echo "Not restarting ZNC because client connections will cause a certificate reload."
 fi
 
 etckeeper commit "Renew and rebuild TLS certificates"

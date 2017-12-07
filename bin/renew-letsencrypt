@@ -25,7 +25,8 @@ if [ "$1" = _post_hook ]; then
 	echo "Unconditionally restarting Apache."
 	systemctl start apache2 || FAILED=1
 	echo "Unconditionally restarting pump.io."
-	systemctl start pump.io@mongodb || FAILED=1
+	# XXX uncomment when I unmask pump.io@mongodb
+	systemctl start pump.io@mongodb #|| FAILED=1
 	echo "Unconditionally restarting Sandstorm."
 	systemctl start sandstorm || FAILED=1
 

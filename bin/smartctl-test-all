@@ -1,3 +1,2 @@
-#!/bin/sh
-sudo true
-echo /dev/sd{b,c,d} | xargs -n 1 sudo smartctl --test=long
+#!/bin/bash
+echo /dev/sd{a,b,c,d} | xargs -n 1 sudo smartctl --test=long

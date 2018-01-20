@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO consult https://btrfs.wiki.kernel.org/index.php/Incremental_Backup#Doing_it_by_hand.2C_step_by_step
+
 # Run daily by cron
 
 do_backup() {

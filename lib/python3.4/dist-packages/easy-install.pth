@@ -1,0 +1,6 @@
+import sys; sys.__plen = len(sys.path)
+./html5lib-1.0.1-py3.4.egg
+./webencodings-0.5.1-py3.4.egg
+./six-1.11.0-py3.4.egg
+./backports_abc-0.5-py3.4.egg
+import sys; new=sys.path[sys.__plen:]; del sys.path[sys.__plen:]; p=getattr(sys,'__egginsert',0); sys.path[p:p]=new; sys.__egginsert = p+len(new)

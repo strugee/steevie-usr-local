@@ -1,5 +1,6 @@
 #!/bin/sh
 # TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
+# TODO: write to a logfile
 
 if [ $(id -u) -ne 0 ]; then
 	echo 'renew-letsencrypt: not invoked as root; bailing'
@@ -68,7 +69,7 @@ fi
 
 echo "debug: comparing $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem)"
 if [ $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem) ]; then
-	echo "Rebuilding ZNC certficates due to updated certificate."
+	echo "Rebuilding ZNC certificates due to updated certificate."
 	generate-znc-bundle
 	echo "Not restarting ZNC because client connections will cause a certificate reload."
 fi

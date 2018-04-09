@@ -34,9 +34,9 @@ if [ "$1" = _post_hook ]; then
 	exit $FAILED
 fi
 
-MAIN_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)
-MAIL_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)
-ZNC_CERT_INODE=$(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem)
+MAIN_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem))
+MAIL_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem))
+ZNC_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem))
 
 etckeeper commit "Commit changes prior to renew-letsencrypt run"
 
@@ -52,23 +52,23 @@ fi
 
 # TODO: consider migrating this to --renew-hook
 
-echo "debug: comparing $MAIN_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem)"
-if [ $MAIN_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/strugee.net/cert.pem) ]; then
+echo "debug: comparing $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem))"
+if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem)) ]; then
 	generate-ejabberd-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd
 fi
 
-echo "debug: comparing $MAIL_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem)"
-if [ $MAIL_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/mail.strugee.net/cert.pem) ]; then
+echo "debug: comparing $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem))"
+if [ $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem)) ]; then
 	echo "Restarting Postfix due to updated certificate."
 	systemctl restart postfix
 	echo "Restarting Dovecot due to updated certificate."
 	systemctl restart dovecot
 fi
 
-echo "debug: comparing $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem)"
-if [ $ZNC_CERT_INODE != $(stat -c %i /etc/letsencrypt/live/znc.strugee.net/cert.pem) ]; then
+echo "debug: comparing $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem))"
+if [ $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem)) ]; then
 	echo "Rebuilding ZNC certificates due to updated certificate."
 	generate-znc-bundle
 	echo "Not restarting ZNC because client connections will cause a certificate reload."

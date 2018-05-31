@@ -52,14 +52,12 @@ fi
 
 # TODO: consider migrating this to --renew-hook
 
-echo "debug: comparing $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem))"
 if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem)) ]; then
 	generate-ejabberd-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd
 fi
 
-echo "debug: comparing $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem))"
 if [ $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem)) ]; then
 	echo "Restarting Postfix due to updated certificate."
 	systemctl restart postfix
@@ -67,7 +65,6 @@ if [ $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.stru
 	systemctl restart dovecot
 fi
 
-echo "debug: comparing $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem))"
 if [ $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem)) ]; then
 	echo "Rebuilding ZNC certificates due to updated certificate."
 	generate-znc-bundle

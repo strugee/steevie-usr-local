@@ -5,9 +5,17 @@
 # Run daily by cron
 
 do_backup() {
-	output="$(btrfs subvolume snapshot -r / /var/backups/system/main/root-$1$(date +%s))"
+	date=$(date +%s)
+
+	output="$(btrfs subvolume snapshot -r / /var/backups/system/main/root-$1$date)"
 	if [ $? != 0 ]; then
 		# Spit out the output on failure to trigger mail to root
+		echo "$output"
+	fi
+
+	output="$(btrfs subvolume snapshot -r /usr/local /var/backups/system/main/usr-local-$1$date)"
+	if [ $? != 0 ]; then
+		# Ditto
 		echo "$output"
 	fi
 }

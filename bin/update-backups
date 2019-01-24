@@ -1,23 +1,14 @@
 #!/bin/sh
 
-# TODO consult https://btrfs.wiki.kernel.org/index.php/Incremental_Backup#Doing_it_by_hand.2C_step_by_step
-
 # Run daily by cron
 
+set -eu
+
 do_backup() {
-	date=$(date +%s)
+	epoch=$(date +%s)
+	datetime=$(date +%F-%H:%M-%a)
 
-	output="$(btrfs subvolume snapshot -r / /var/backups/system/main/root-$1$date)"
-	if [ $? != 0 ]; then
-		# Spit out the output on failure to trigger mail to root
-		echo "$output"
-	fi
-
-	output="$(btrfs subvolume snapshot -r /usr/local /var/backups/system/main/usr-local-$1$date)"
-	if [ $? != 0 ]; then
-		# Ditto
-		echo "$output"
-	fi
+	zfs snapshot -r rpool@$1$epoch-$datetime
 }
 
 if [ $(date +%d) = 01 ]; then
@@ -27,11 +18,10 @@ elif [ $(date +%A) = Sunday ]; then
 	# Weekly backup
 	do_backup weekly-
 	# This keeps four weeks of backups, which is technically different than a month. But honestly, who cares. This is Good Enough™.
-	# TODO should we be using `ls` here?
-	ls -d /var/backups/system/main/root-weekly-* | head --lines=-4 | xargs -n 1 sudo btrfs subvolume delete
+	zfs list -Ho name -d1 -t snapshot | grep '@weekly' | head --lines=-4 | xargs -n 1 zfs destroy -r
 else
 	# Daily backup
 	do_backup daily-
 	# TODO should we be using `ls` here?
-	ls -d /var/backups/system/main/root-daily-* | head --lines=-7 | xargs -n 1 sudo btrfs subvolume delete
+	zfs list -Ho name -d1 -t snapshot | grep '@daily' | head --lines=-7 | xargs -n 1 zfs destroy -r
 fi

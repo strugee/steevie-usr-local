@@ -1,0 +1,35 @@
+#!/bin/sh
+
+name=$1
+topmount=$2
+
+die() {
+	val=$1
+	shift
+	echo $(basename $0): $@ >&2
+	exit $val
+}
+
+test $(id -u) = 0  || die 1 only root can do that
+test ${1+x} || die 2 missing snapshot name
+test ${2+x} || die 2 missing mount point
+test -d $topmount || die 3 mount point $topmount does not exist
+
+# TODO this probably screws up mount dependencies...
+# E.g. if we're trying to mount /subdir before we mount /
+for orig in $(zfs list -rHo name -t snapshot | grep -F $name | cut -d@ -f1); do
+	mountpoint=$(zfs get -Ho value mountpoint $orig)
+
+	# XXX DIRTY HACK MISCONFIGURATION PLEASE FIX
+	[ $mountpoint = /var ] && continue
+
+	[ $mountpoint = none ] && continue
+	[ $mountpoint = - ] && continue
+
+	# Query fstab for legacy mountpoints
+	[ $mountpoint = legacy ] && mountpoint=$(findmnt -sno TARGET $orig)
+
+	# The sed command prepends a slash if it's not already there
+	# https://stackoverflow.com/a/40679203/1198896
+	mount -t zfs $orig@$name $topmount$(echo $mountpoint | sed 's;^[^/];/&;')
+done

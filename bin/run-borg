@@ -2,13 +2,28 @@
 
 set -eu
 
-# TODO create a ZFS snapshot, mount, and use that as the root
-
 if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
 	echo $(basename $0): failed to acquire lockfile >&2
 	exit 0
 fi
 
-borg create --stats --compression auto,lzma,6 --exclude /root/.gdfuse/default/cache --exclude /root/.cache --exclude '/home/*/.cache' --exclude /var/cache --exclude /var/backups --exclude /var/tmp --exclude /var/log /media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) /etc/ /home /srv /usr/local /root /var /opt /boot /bin/ /lost+found /lib /lib64 /sbin /vmlinuz* /initrd.img* /usr
+gc() {
+	umount -R /media/borg-stage
+	# For some reason there's a weird alternate empty dataset mount underneath everything that doesn't unmount the first time around
+	umount -R /media/borg-stage
+	zfs destroy -r rpool@borg-stage
+}
+
+# Garbage-collect old staging snapshots in case we crashed last time
+zfs list -d1 rpool@borg-stage >/dev/null 2>&1 && gc
+
+# Freeze a view of the filesystem so Borg backups are atomic
+zfs snapshot -r rpool@borg-stage
+mkdir -p /media/borg-stage
+zfs-mount-snapshots borg-stage /media/borg-stage
+
+borg create --stats --compression auto,lzma,6 --filter 'R /media/borg-stage/' --exclude /root/.gdfuse/default/cache --exclude /root/.cache --exclude '/home/*/.cache' --exclude /var/cache --exclude /var/backups --exclude /var/tmp --exclude /var/log /media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) /etc/ /home /srv /usr/local /root /var /opt /boot /bin/ /lost+found /lib /lib64 /sbin /vmlinuz* /initrd.img* /usr
+
+gc
 
 dotlockfile -u /var/lock/run-borg.lock

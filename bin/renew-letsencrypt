@@ -38,7 +38,7 @@ MAIN_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.p
 MAIL_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem))
 ZNC_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem))
 
-etckeeper commit "Commit changes prior to renew-letsencrypt run"
+#etckeeper commit "Commit changes prior to renew-letsencrypt run"
 
 echo "Invoking Let's Encrypt."
 if letsencrypt renew --noninteractive --pre-hook "$0 _pre_hook" --post-hook "$0 _post_hook"; then
@@ -71,4 +71,4 @@ if [ $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.struge
 	echo "Not restarting ZNC because client connections will cause a certificate reload."
 fi
 
-etckeeper commit "Renew and rebuild TLS certificates"
+#etckeeper commit "Renew and rebuild TLS certificates"

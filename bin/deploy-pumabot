@@ -1,8 +1,18 @@
 #!/bin/sh
 
+set -x
+
 if [ $(id -u) -ne 0 ]; then
         echo 'deploy-pumabot: not invoked as root; bailing'
         exit 1
 fi
 
-sudo -u root npm install -g pump-io/pumabot && systemctl daemon-reload && systemctl restart hubot-pump
+# TODO error handling?
+
+mkdir -p /usr/lib/node_modules
+chown hubot-pump /usr/lib/node_modules
+chown -R hubot-pump /usr/lib/node_modules/pumabot 2>/dev/null
+sudo -u hubot-pump -s -H npm install -g pump-io/pumabot && systemctl daemon-reload && systemctl restart hubot-pump
+chown root:root /usr/lib/node_modules
+chown -R root:root /usr/lib/node_modules/pumabot
+

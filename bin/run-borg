@@ -2,6 +2,11 @@
 
 set -eu
 
+if [ $(id -u) != 0 ]; then
+	echo $(basename $0): need to be root >&2
+	exit 1
+fi
+
 if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
 	echo $(basename $0): failed to acquire lockfile >&2
 	exit 0

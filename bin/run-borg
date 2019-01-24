@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# TODO acquire a lock
+# TODO create a ZFS snapshot, mount, and use that as the root
+borg create --stats --compression auto,lzma,6 --exclude /root/.gdfuse/default/cache --exclude /root/.cache --exclude '/home/*/.cache' --exclude /var/cache --exclude /var/backups --exclude /var/tmp --exclude /var/log /media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) /etc/ /home /srv /usr/local /root /var /opt /boot /bin/ /lost+found /lib /lib64 /sbin /vmlinuz* /initrd.img* /usr

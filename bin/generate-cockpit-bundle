@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cat /etc/letsencrypt/live/strugee.net/privkey.pem /etc/letsencrypt/live/strugee.net/fullchain.pem > /etc/cockpit/ws-certs.d/bundle.cert
+chown root:cockpit-ws /etc/cockpit/ws-certs.d/bundle.cert
+chmod 0640 /etc/cockpit/ws-certs.d/bundle.cert

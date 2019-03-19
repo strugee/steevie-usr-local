@@ -54,8 +54,11 @@ fi
 
 if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem)) ]; then
 	generate-ejabberd-bundle
+	generate-cockpit-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd
+	echo "Restarting Cockpit due to updated certificate."
+	systemctl restart cockpit
 fi
 
 if [ $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem)) ]; then

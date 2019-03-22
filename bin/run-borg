@@ -12,6 +12,8 @@ if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
 	exit 0
 fi
 
+# TODO trap crashes and run this
+
 gc() {
 	umount -R /media/borg-stage
 	# For some reason there's a weird alternate empty dataset mount underneath everything that doesn't unmount the first time around

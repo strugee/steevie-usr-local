@@ -1,5 +1,5 @@
 #!/bin/sh
 cd /srv/http/default
 chown -R nobody .
-sudo -u nobody git pull --rebase --verify-signatures
+sudo -u nobody git pull --verify-signatures
 chown -R root:root .

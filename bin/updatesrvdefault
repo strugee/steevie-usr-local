@@ -1,3 +1,5 @@
 #!/bin/sh
 cd /srv/http/default
-git pull --rebase --verify-signatures
+chown -R nobody .
+sudo -u nobody git pull --rebase --verify-signatures
+chown -R root:root .

@@ -15,9 +15,9 @@ fi
 # TODO trap crashes and run this
 
 gc() {
-	umount -R /media/borg-stage
+	mountpoint -q /media/borg-stage && umount -R /media/borg-stage
 	# For some reason there's a weird alternate empty dataset mount underneath everything that doesn't unmount the first time around
-	umount -R /media/borg-stage
+	mountpoint -q /media/borg-stage && umount -R /media/borg-stage
 	zfs destroy -r rpool@borg-stage
 }
 

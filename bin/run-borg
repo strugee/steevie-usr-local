@@ -31,7 +31,36 @@ zfs snapshot -r rpool@borg-stage
 mkdir -p /media/borg-stage
 zfs-mount-snapshots borg-stage /media/borg-stage
 
-borg create --stats --compression auto,lzma,6 --filter 'R /media/borg-stage/' --exclude /root/.gdfuse/default/cache --exclude /root/.cache --exclude '/home/*/.cache' --exclude /var/cache --exclude /var/backups --exclude /var/tmp --exclude /var/log /media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) /etc/ /home /srv /usr/local /root /var /opt /boot /bin/ /lost+found /lib /lib64 /sbin /vmlinuz* /initrd.img* /usr
+cd /media/borg-stage
+
+borg create --progress --stats --compression auto,lzma,6 \
+--exclude root/.gdfuse/default/cache \
+--exclude root/.cache \
+--exclude home/*/.cache \
+--exclude var/cache \
+--exclude var/backups \
+--exclude var/tmp \
+--exclude var/log \
+/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) \
+etc \
+home \
+srv \
+usr/local \
+root \
+var \
+opt \
+boot \
+bin \
+lost+found \
+lib \
+lib64 \
+sbin \
+vmlinuz* \
+initrd.img* \
+usr
+
+# Need to not be in /media/borg-stage so that it can be unmounted
+cd - >/dev/null
 
 gc
 

@@ -31,6 +31,16 @@ zfs snapshot -r rpool@borg-stage
 mkdir -p /media/borg-stage
 zfs-mount-snapshots borg-stage /media/borg-stage
 
+# It takes a *long* time to walk system directories so we only do so when
+# triggered to do so by a dpkg postrun hook.
+# Note that we always walk /usr/local because modifying that won't trigger
+# the dpkg hook. Ditto with /usr/lib/node_modules and npm. /boot isn't there
+# either because of tools like update-initramfs.
+SYSTEM_DIRS='usr/local usr/lib/node_modules'
+if test -e /var/local/borg-trigger-system-backup; then
+	SYSTEM_DIRS='bin lib lib64 sbin usr'
+fi
+
 cd /media/borg-stage
 
 borg create --progress --stats --compression auto,lzma,6 \
@@ -45,23 +55,20 @@ borg create --progress --stats --compression auto,lzma,6 \
 etc \
 home \
 srv \
-usr/local \
 root \
 var \
 opt \
 /boot \
-bin \
 lost+found \
-lib \
-lib64 \
-sbin \
 vmlinuz* \
 initrd.img* \
-usr
+$SYSTEM_DIRS
 
 # Need to not be in /media/borg-stage so that it can be unmounted
 cd - >/dev/null
 
 gc
+
+rm -f /var/local/borg-trigger-system-backup
 
 dotlockfile -u /var/lock/run-borg.lock

@@ -63,6 +63,7 @@ opt \
 lost+found \
 vmlinuz* \
 initrd.img* \
+snap \
 $SYSTEM_DIRS
 
 # Need to not be in /media/borg-stage so that it can be unmounted

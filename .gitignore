@@ -59,3 +59,5 @@ bin/sandstorm
 bin/spk
 lib/python*
 man
+src/znc-playback
+lib/znc

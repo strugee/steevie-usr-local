@@ -1,5 +1,12 @@
 #!/bin/sh
+
+KEY=D825FD54D9B940FF0FFFB31AA4FDB7BE12F63EC3
+TMPDIR=$(sudo -u nobody mktemp -d)
+
+gpg --export $KEY | sudo -u nobody gpg --homedir $TMPDIR --import
+gpg --export-ownertrust | grep $KEY | sudo -u nobody  gpg --homedir $TMPDIR --import-ownertrust
+
 cd /srv/http/default
 chown -R nobody .
-sudo -u nobody git pull --verify-signatures
+sudo -u nobody GNUPGHOME=$TMPDIR git pull --verify-signatures
 chown -R root:root .

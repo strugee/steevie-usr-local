@@ -49,7 +49,7 @@ usr/local \
 root \
 var \
 opt \
-boot \
+/boot \
 bin \
 lost+found \
 lib \

@@ -39,6 +39,7 @@ zfs-mount-snapshots borg-stage /media/borg-stage
 SYSTEM_DIRS='usr/local usr/lib/node_modules'
 if test -e /var/local/borg-trigger-system-backup; then
 	SYSTEM_DIRS='bin lib lib64 sbin usr'
+	BORG_TAG='-withsystem'
 fi
 
 cd /media/borg-stage
@@ -51,7 +52,7 @@ borg create --progress --stats --compression auto,lzma,6 \
 --exclude var/backups \
 --exclude var/tmp \
 --exclude var/log \
-/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s) \
+/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
 etc \
 home \
 srv \

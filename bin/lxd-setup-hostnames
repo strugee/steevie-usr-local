@@ -1,0 +1,9 @@
+#!/bin/sh
+
+LXDINTERFACE=lxdbr0
+LXDDOMAIN=lxd
+LXDDNSIP=$(ip addr show $LXDINTERFACE | grep -Po 'inet \K[\d.]+')
+
+# systemd-resolve --interface lxdbr0 --revert
+systemd-resolve --interface $LXDINTERFACE --set-dns $LXDDNSIP --set-domain $LXDDOMAIN
+

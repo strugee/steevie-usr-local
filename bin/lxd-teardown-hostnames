@@ -1,0 +1,3 @@
+#!/bin/sh
+
+systemd-resolve --interface lxdbr0 --revert

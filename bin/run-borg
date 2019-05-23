@@ -37,6 +37,7 @@ zfs-mount-snapshots borg-stage /media/borg-stage
 # the dpkg hook. Ditto with /usr/lib/node_modules and npm. /boot isn't there
 # either because of tools like update-initramfs.
 SYSTEM_DIRS='usr/local usr/lib/node_modules'
+BORG_TAG=''
 if test -e /var/local/borg-trigger-system-backup; then
 	SYSTEM_DIRS='bin lib lib64 sbin usr'
 	BORG_TAG='-withsystem'

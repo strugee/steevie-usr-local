@@ -4,14 +4,22 @@
 
 set -eu
 
+CHRONIC=false
+test $(ps -o comm= $PPID) = chronic && CHRONIC=true
+
+SOFTERR_STREAM=2
+$CHRONIC && SOFTERR_STREAM=1
+SOFTERR_EXITCODE=1
+$CHRONIC && SOFTERR_EXITCODE=0
+
 if [ $(id -u) != 0 ]; then
 	echo $(basename $0): need to be root >&2
 	exit 1
 fi
 
 if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
-	echo $(basename $0): failed to acquire lockfile >&2
-	exit 0
+	echo $(basename $0): failed to acquire lockfile >&$SOFTERR_STREAM
+	exit $SOFTERR_EXITCODE
 fi
 
 # TODO trap crashes and run this

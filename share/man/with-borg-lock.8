@@ -1,0 +1,49 @@
+.Dd June 20, 2019
+.Dt RUN-BORG 8
+.Os steevie
+.Sh NAME
+.Nm run-borg
+.Nd run
+.Xr borg 1
+with the standard parameters for a system backup
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+.Nm
+sets up the system to perform a backup and then invokes
+.Xr borg-create 1
+to do so. Specifically, it:
+.Bl -enum
+.It
+Acquires the system Borg lock
+.Xr borg.lock 5
+(or bails out)
+.It
+Creates a recursive ZFS snapshot of
+.Pa /
+and mounts it at
+.Pa /media/borg-stage
+.It
+Determines whether to include system files based on the presence of
+.Pa /var/local/borg-trigger-system-backup
+.It
+Invokes
+.Xr borg-create 1
+with the standard parameters for compression, cache exclusion, etc.
+.El
+.Pp
+There are no options.
+If you need something else, use
+.Xr run-borg-custom 8 .
+.Sh EXIT CODE
+TODO
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net
+.Sh BUGS
+.Nm
+does not clean up its lockfile or temporary ZFS snapshots if it is killed.
+There may be a problematic glob passed to
+.Ar --exclude
+and
+.Nm
+may not handle LXD datasets right.

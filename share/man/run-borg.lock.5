@@ -1,0 +1,21 @@
+.Dd June 21, 2019
+.Dt RUN-BORG.LOCK 5
+.Os steevie
+.Sh NAME
+.Nm run-borg.lock
+.Nd the system-wide
+.Xr borg 1
+lockfile
+.Sh DESCRIPTION
+.Pa /var/lock/borg.lock
+is created whenever anything needs to work with the
+.Xr borg 1
+system backups.
+It contains the PID of the process that has acquired the lock.
+.Sh SEE ALSO
+.Xr dotlock 1 ,
+.Xr run-borg 8 ,
+.Xr run-borg-custom 8
+.Sh AUTHORS
+Originally introduced by
+.An AJ Jordan Aq Mt alex@strugee.net

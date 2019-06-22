@@ -58,7 +58,6 @@ bin/bundler
 bin/sandstorm
 bin/spk
 lib/python*
-man
 src/equivs
 src/znc-playback
 lib/znc

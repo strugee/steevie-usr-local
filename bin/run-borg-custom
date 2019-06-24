@@ -5,20 +5,7 @@
 
 set -eu
 
-CHRONIC=false
-test $(ps -o comm= $PPID) = chronic && CHRONIC=true
-
-SOFTERR_STREAM=2
-$CHRONIC && SOFTERR_STREAM=1
-SOFTERR_EXITCODE=1
-$CHRONIC && SOFTERR_EXITCODE=0
-
-ensure_args() {
-	if [ $# = 0 ]; then
-		echo usage: $0 [-w] FILE... 1>&2
-		exit 1
-	fi
-}
+. ../lib/run-borg/functions.sh
 
 ensure_args $@
 
@@ -30,39 +17,25 @@ else
 	DOTLOCK_ARGS=""
 fi
 
-if [ $(id -u) != 0 ]; then
-	echo $(basename $0): need to be root >&2
-	exit 1
-fi
+test_is_root
 
-if ! dotlockfile -pr0 $DOTLOCK_ARGS /var/lock/run-borg.lock; then
-	echo $(basename $0): failed to acquire lockfile >&$SOFTERR_STREAM
-	exit $SOFTERR_EXITCODE
-fi
+lockfile_acquire
 
 BORG_TAG="customrun-$1"
 shift
 
-# TODO trap crashes and run this
-
-gc() {
-	mountpoint -q /media/borg-stage && umount -R /media/borg-stage
-	# For some reason there's a weird alternate empty dataset mount underneath everything that doesn't unmount the first time around
-	mountpoint -q /media/borg-stage && umount -R /media/borg-stage
-	zfs destroy -r rpool@borg-stage
-}
+# TODO trap crashes and run gc()
 
 # Garbage-collect old staging snapshots in case we crashed last time
-zfs list -d1 rpool@borg-stage >/dev/null 2>&1 && gc
+gc_if_needed
 
-# Freeze a view of the filesystem so Borg backups are atomic
-zfs snapshot -r rpool@borg-stage
-mkdir -p /media/borg-stage
-zfs-mount-snapshots borg-stage /media/borg-stage
+# Freeze a view of the filesystem at /media/borg-stage so Borg backups are atomic
+freeze_fs
 
 cd /media/borg-stage
 
-borg create --progress --stats --compression auto,lzma,6 \
+# TODO remove --read-special
+borg create --read-special --progress --stats --compression auto,lzma,6 \
 --exclude root/.gdfuse/default/cache \
 --exclude root/.cache \
 --exclude home/*/.cache \
@@ -78,4 +51,4 @@ cd - >/dev/null
 
 gc
 
-dotlockfile -u /var/lock/run-borg.lock
+lockfile_release

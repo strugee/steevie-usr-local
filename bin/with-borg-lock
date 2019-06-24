@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../lib/run-borg/functions.sh
+. $(dirname $0)/../lib/run-borg/functions.sh
 
 ARGSTR='[-w] FILE...'
 

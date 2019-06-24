@@ -4,7 +4,7 @@
 
 set -eu
 
-. ../lib/run-borg/functions.sh
+. $(dirname $0)/../lib/run-borg/functions.sh
 
 test_is_root
 

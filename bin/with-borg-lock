@@ -6,12 +6,25 @@ ARGSTR='[-w] FILE...'
 
 ensure_args "$ARGSTR" $@
 
-# TODO complain when args are wrong; recognize -- for commands starting with `-`
-if [ $1 = '-w' ]; then
-	DOTLOCK_ARGS='-r -1'
-	shift
-	ensure_args "$ARGSTR" $@
-fi
+# Need to repeat ensure_args in every if clause to ensure that $1 exists for the loop conditional
+# TODO rewrite this to use switch/case
+while [ $(echo $1 | cut -c 1) = - ]; do
+	if [ $1 = '-w' ]; then
+		DOTLOCK_ARGS='-r -1'
+		shift
+		ensure_args "$ARGSTR" $@
+		continue
+	fi
+
+	if [ $1 = '--' ]; then
+		shift
+		ensure_args "$ARGSTR" $@
+		break
+	fi
+
+	echo $(basename $0): unrecognized option -- $1
+	exit 1
+done
 
 test_is_root
 

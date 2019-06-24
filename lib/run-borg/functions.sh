@@ -17,7 +17,7 @@ ensure_args() {
 	ARGSTR="$1"
 	shift
 	if [ $# = 0 ]; then
-		echo usage: $0 $ARGSTR 1>&2
+		echo usage: $(basename $0) $ARGSTR 1>&2
 		exit 1
 	fi
 }

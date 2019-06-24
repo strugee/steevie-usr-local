@@ -22,12 +22,20 @@ ensure_args() {
 
 ensure_args $@
 
+if [ $1 = '-w' ]; then
+	DOTLOCK_ARGS="-r -1"
+	shift
+	ensure_args $@
+else
+	DOTLOCK_ARGS=""
+fi
+
 if [ $(id -u) != 0 ]; then
 	echo $(basename $0): need to be root >&2
 	exit 1
 fi
 
-if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
+if ! dotlockfile -pr0 $DOTLOCK_ARGS /var/lock/run-borg.lock; then
 	echo $(basename $0): failed to acquire lockfile >&$SOFTERR_STREAM
 	exit $SOFTERR_EXITCODE
 fi

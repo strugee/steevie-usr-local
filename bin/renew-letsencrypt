@@ -51,7 +51,9 @@ fi
 # TODO: consider migrating this to --renew-hook
 
 if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem)) ]; then
+	echo "Rebuilding ejabberd certificates due to updated certificate."
 	generate-ejabberd-bundle
+	echo "Rebuilding Cockpit certificates due to updated certificate."
 	generate-cockpit-bundle
 	echo "Restarting ejabberd due to updated certificate."
 	systemctl restart ejabberd

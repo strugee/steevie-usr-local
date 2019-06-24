@@ -13,6 +13,15 @@ $CHRONIC && SOFTERR_STREAM=1
 SOFTERR_EXITCODE=1
 $CHRONIC && SOFTERR_EXITCODE=0
 
+ensure_args() {
+	if [ $# = 0 ]; then
+		echo usage: $0 [-w] FILE... 1>&2
+		exit 1
+	fi
+}
+
+ensure_args $@
+
 if [ $(id -u) != 0 ]; then
 	echo $(basename $0): need to be root >&2
 	exit 1

@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ $# = 0 ]; then
+	# Bug: etckeeper stdout gets unilaterally converted to stderr,
+	# but there isn't any stdout here anyway so who cares.
+	etckeeper 2>&1 | sed 's/etckeeper/usrkeeper/' 1>&2
+	exit 1
+fi
+
 firstarg=$1
 shift
 

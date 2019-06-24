@@ -2,6 +2,17 @@
 
 . ../lib/run-borg/functions.sh
 
+ARGSTR='[-w] FILE...'
+
+ensure_args "$ARGSTR" $@
+
+# TODO complain when args are wrong; recognize -- for commands starting with `-`
+if [ $1 = '-w' ]; then
+	DOTLOCK_ARGS='-r -1'
+	shift
+	ensure_args "$ARGSTR" $@
+fi
+
 test_is_root
 
 lockfile_acquire

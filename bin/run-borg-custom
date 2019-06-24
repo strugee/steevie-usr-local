@@ -7,12 +7,14 @@ set -eu
 
 . ../lib/run-borg/functions.sh
 
-ensure_args $@
+ARGSTR='[-w] FILE...'
+
+ensure_args "$ARGSTR" $@
 
 if [ $1 = '-w' ]; then
 	DOTLOCK_ARGS="-r -1"
 	shift
-	ensure_args $@
+	ensure_args "$ARGSTR" $@
 else
 	DOTLOCK_ARGS=""
 fi

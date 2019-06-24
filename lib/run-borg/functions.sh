@@ -14,8 +14,10 @@ SOFTERR_EXITCODE=1
 $CHRONIC && SOFTERR_EXITCODE=0
 
 ensure_args() {
+	ARGSTR="$1"
+	shift
 	if [ $# = 0 ]; then
-		echo usage: $0 [-w] FILE... 1>&2
+		echo usage: $0 $ARGSTR 1>&2
 		exit 1
 	fi
 }

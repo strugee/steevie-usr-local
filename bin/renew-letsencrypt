@@ -43,8 +43,6 @@ etckeeper commit "Commit changes prior to renew-letsencrypt run"
 echo "Invoking Let's Encrypt."
 if letsencrypt renew --noninteractive --pre-hook "$0 _pre_hook" --post-hook "$0 _post_hook"; then
 	echo "Renewal succeeded."
-	echo "Fixing Mosquitto permissions."
-	for i in /etc/letsencrypt/live/mqtt.strugee.net/*; do chgrp mosquitto $(readlink -e $i); done
 else
 	echo "Failed to renew some certificates. Mailing root."
 	echo "Execution of \`letsencrypt renew\` failed while renewing Let's Encrypt certificates.\n\nThis may indicate a misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to execute \`letsencrypt renew\`" root

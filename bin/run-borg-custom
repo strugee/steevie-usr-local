@@ -23,7 +23,7 @@ if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
 	exit $SOFTERR_EXITCODE
 fi
 
-BORG_TAG="-customrun-$1"
+BORG_TAG="customrun-$1"
 shift
 
 # TODO trap crashes and run this

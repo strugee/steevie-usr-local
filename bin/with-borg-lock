@@ -10,6 +10,6 @@ if ! dotlockfile -pr0 /var/lock/run-borg.lock; then
 	exit 1
 fi
 
-exec $@
+$@
 
 dotlockfile -u /var/lock/run-borg.lock

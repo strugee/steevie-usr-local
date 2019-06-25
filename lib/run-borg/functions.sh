@@ -49,7 +49,8 @@ gc() {
 
 gc_if_needed() {
 	# Garbage-collect old staging snapshots in case we crashed last time
-	zfs list -d1 rpool@borg-stage >/dev/null 2>&1 && gc
+	# Need `|| true` because otherwise the command failure crashes the program due to `set -e`
+	zfs list -d1 rpool@borg-stage >/dev/null 2>&1 && gc || true
 }
 
 freeze_fs() {

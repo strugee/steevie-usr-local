@@ -30,6 +30,10 @@ Determines whether to include system files based on the presence of
 Invokes
 .Xr borg-create 1
 with the standard parameters for compression, cache exclusion, etc.
+.It
+Cleans up the borg-stage ZFS snapshot, removes
+.Pa /var/local/borg-trigger-system-backup ,
+and releases the system Borg lock
 .El
 .Pp
 There are no options.

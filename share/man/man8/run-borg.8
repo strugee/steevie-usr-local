@@ -35,8 +35,25 @@ with the standard parameters for compression, cache exclusion, etc.
 There are no options.
 If you need something else, use
 .Xr run-borg-custom 8 .
-.Sh EXIT CODE
-TODO
+.Sh DIAGNOSTICS
+When running under
+.Xr chronic 1 ,
+stderr output for the following errors is suppressed:
+.Bl -bullet
+.It
+Failure to acquire
+.Xr run-borg.lock 5
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Pp
+This behavior is modified when
+.Nm
+is running under
+.Xr chronic 1 .
+Specifically, errors that cause stderr to be suppressed (see
+.Sx DIAGNOSTICS )
+also do not cause a nonzero exit code.
 .Sh AUTHORS
 .An AJ Jordan Aq Mt alex@strugee.net
 .Sh BUGS

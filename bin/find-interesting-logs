@@ -2,8 +2,8 @@
 
 # TODO make these target the beginning of the line too (to make sure we're not hitting spoofed data in the middle of the line)
 
-# TODO TODO TODO!
-IP_REGEX='.*'
+# https://stackoverflow.com/a/5284410/1198896
+IP_REGEX='(:?[[:digit:]]{1,3}.?){4}'
 
 sudo() {
 	grep -ve 'sudo\[.*\]: alex : TTY=.* ; PWD=/.* ; USER=root ;' \
@@ -142,8 +142,6 @@ mail() {
 }
 
 ssh() {
-	# https://stackoverflow.com/a/5284410/1198896
-	IP_REGEX='(:?[[:digit:]]{1,3}.?){4}'
 	SSH_PROLOGUE='steevie sshd\[[[:digit:]]{3,7}\]:'
 	egrep -ve "$SSH_PROLOGUE"' Invalid user .* from '"$IP_REGEX"'$' \
 	 -e "$SSH_PROLOGUE"' Invalid user .* from '"$IP_REGEX"' port [[:digit:]]+$' \

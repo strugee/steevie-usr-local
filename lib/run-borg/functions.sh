@@ -56,6 +56,7 @@ gc_if_needed() {
 freeze_fs() {
 	# Freeze a view of the filesystem so Borg backups are atomic
 	zfs snapshot -r rpool@borg-stage
+	zfs list -t snapshot -o name,net.strugee:borgignore -s name -H | grep 'on$' | cut -f1 | grep '@borg-stage' | xargs -n 1 zfs destroy
 	mkdir -p /media/borg-stage
 	zfs-mount-snapshots borg-stage /media/borg-stage
 }

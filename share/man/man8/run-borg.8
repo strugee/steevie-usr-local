@@ -1,4 +1,4 @@
-.Dd June 20, 2019
+.Dd October 6, 2019
 .Dt RUN-BORG 8
 .Os steevie
 .Sh NAME
@@ -39,6 +39,17 @@ and releases the system Borg lock
 There are no options.
 If you need something else, use
 .Xr run-borg-custom 8 .
+.Em However ,
+the behavior of
+.Nm
+may be influenced by setting ZFS dataset properties.
+Specifically, if the
+.Li net.strugee:borgignore
+property is set to
+.Li on ,
+then
+.Nm
+will destroy the newly-created snapshot of this dataset before running the backup.
 .Sh DIAGNOSTICS
 When running under
 .Xr chronic 1 ,

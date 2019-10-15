@@ -7,7 +7,7 @@ set -eu
 
 . $(dirname $0)/../lib/run-borg/functions.sh
 
-ARGSTR='[-w] FILE...'
+ARGSTR='[-w] [-s] FILE...'
 
 ensure_args "$ARGSTR" $@
 
@@ -17,6 +17,14 @@ if [ $1 = '-w' ]; then
 	ensure_args "$ARGSTR" $@
 else
 	DOTLOCK_ARGS=""
+fi
+
+if [ $1 = '-s' ]; then
+	BORG_FLAGS='--read-special'
+	shift
+	ensure_args "$ARGSTR" $@
+else
+	BORG_FLAGS=''
 fi
 
 test_is_root
@@ -36,8 +44,7 @@ freeze_fs
 
 cd /media/borg-stage
 
-# TODO remove --read-special
-borg create --read-special --progress --stats --compression auto,lzma,6 \
+borg create $BORG_FLAGS --progress --stats --compression auto,lzma,6 \
 --exclude root/.gdfuse/default/cache \
 --exclude root/.cache \
 --exclude home/*/.cache \

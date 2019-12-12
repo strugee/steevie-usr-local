@@ -24,10 +24,12 @@ login() {
 
 cron() {
 	# TODO tighten
+	# TODO what the heck is the LIST line about
 	egrep -ve 'steevie cron\[.*\]: \(CRON\) INFO \(pidfile fd = 3\)$' \
 	 -e 'steevie cron\[.*\]: \(\*system\*\) RELOAD \(/etc/crontab\)$' \
 	 -e 'steevie cron\[.*\]: \(CRON\) INFO \(Running @reboot jobs\)$' \
 	 -e 'steevie CRON\[.*\]: \(.*\) CMD .*$' \
+	 -e 'steevie crontab\[.*\]: \(root\) LIST \(nobody\)$' \
 	 -e 'steevie CRON\[.*\]: pam_unix\(cron:session\): session opened for user .* by \(uid=0\)$' \
 	 -e 'steevie CRON\[.*\]: pam_unix\(cron:session\): session closed for user .*$'
 }
@@ -110,7 +112,9 @@ packagekit() {
 }
 
 cockpit() {
-	egrep -ve 'steevie cockpit-ws\[.*\]: Using certificate: /etc/cockpit/ws-certs.d/bundle.cert$'
+	egrep -ve 'steevie cockpit-ws\[.*\]: Using certificate: /etc/cockpit/ws-certs.d/bundle.cert$' \
+	 -e 'steevie cockpit-ws\[.*\]: received invalid HTTP request line$' \
+	 -e 'steevie cockpit-ws\[.*\]: couldn'\''t read from connection: Error receiving data: Connection reset by peer$'
 }
 
 networking() {
@@ -125,8 +129,17 @@ networking() {
 	 -e 'steevie dhclient\[[[:digit:]]+\]: Sending on   LPF/eno2/[[:alnum:]:]+$' \
 	 -e 'steevie dhclient\[[[:digit:]]+\]: Sending on   Socket/fallback$' \
 	 -e 'steevie dhclient\[[[:digit:]]+\]: DHCPDISCOVER on eno2 to 255.255.255.255 port 67 interval [[:digit:]]+$' \
-	 -e 'steevie dhclient\[[[:digit:]]+\]: DHCPREQUEST of '"$IP_REGEX"' on eno2 to 255.255.255.255 port 67$' \
-	 -e 'steevie dhclient\[[[:digit:]]+\]: DHCP(OFFER|ACK) of '"$IP_REGEX"' from '"$IP_REGEX"'$'
+	 -e 'steevie dhclient\[[[:digit:]]+\]: DHCPREQUEST of '"$IP_REGEX"' on eno2 to '"$IP_REGEX"' port 67$' \
+	 -e 'steevie dhclient\[[[:digit:]]+\]: DHCP(OFFER|ACK) of '"$IP_REGEX"' from '"$IP_REGEX"'$' \
+	 -e 'steevie dhclient\[[[:digit:]]+\]: bound to '"$IP_REGEX"' -- renewal in [[:digit:]]+ seconds.$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\):   (address|gateway|server identifier) '"$IP_REGEX"'$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\):   lease time [[:digit:]]+$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\):   plen 24 \('"$IP_REGEX"'\)$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\):   nameserver '"'$IP_REGEX'"'$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\):   domain name '"'Home'"'$' \
+	 -e 'steevie NetworkManager\[[[:digit:]]+\]: <info>  \[[[:digit:].]+\] dhcp4 \(eno2\): state changed bound -> bound$' \
+	 -e 'steevie nm-dispatcher\[[[:digit:]]+\]: req:1 '"'dhcp4-change'"' \[eno2\]: new request \(2 scripts\)$' \
+	 -e 'steevie nm-dispatcher\[[[:digit:]]+\]: req:1 '"'dhcp4-change'"' \[eno2\]: start running ordered scripts...$'
 }
 
 timesyncd() {
@@ -150,6 +163,7 @@ mail() {
 	 -e 'postfix/smtpd\[.*\]: disconnect from [[:alnum:].]+\['"$IP_REGEX"'\]' \
 	 -e 'postfix/smtpd\[.*\]: lost connection after (CONNECT|EHLO|AUTH|RCPT|STARTTLS) from [[:alnum:].]+\['"$IP_REGEX"'\]' \
 	 -e 'postfix/smtpd\[.*\]: SSL_accept error from [[:alnum:].]+\['"$IP_REGEX"'\]: -1' \
+	 -e 'postfix/smtpd\[.*\]: too many errors after RCPT from unknown\['"$IP_REGEX"'\]' \
 	 -e 'postfix/smtpd\[.*\]: warning: TLS library problem: error:1417D0FC:SSL routines:tls_process_client_hello:unknown protocol:../ssl/statem/statem_srvr.c:953:$' \
 	 -e 'postfix/smtpd\[.*\]: warning: TLS library problem: error:1417D0FC:SSL routines:tls_process_client_hello:version too low:../ssl/statem/statem_srvr.c:989:$' \
 	 -e 'postfix/(local|pipe)\[.*\]: [[:alnum:]]+: to=<.*>, .* \(delivered (to mailbox|via dovecot service)\)' \
@@ -159,6 +173,7 @@ mail() {
 	 -e 'postfix/qmgr\[.*\]: [[:alnum:]]+: from=<.*@.*>, size=.*, nrcpt=. \(queue active\)$' \
 	 -e 'postfix/smtpd\[.*\]: NOQUEUE: reject: RCPT from .*: Recipient address rejected: User unknown in local recipient table' \
 	 -e 'postfix/smtpd\[.*\]: NOQUEUE: reject: RCPT from .*: Relay access denied' \
+	 -e 'postfix/smtpd\[.*\]: timeout after (CONNECT|AUTH) from unknown\['"$IP_REGEX"'\]' \
 	 -e 'postfix/anvil\[.*\]: statistics:'
 }
 
@@ -176,7 +191,7 @@ ssh() {
 	 -e "$SSH_PROLOGUE"' error: authentication error for illegal user [[:alnum:]]+ from '"$IP_REGEX"'$' \
 	 -e "$SSH_PROLOGUE"' error: PAM: authentication error for  ?.+ from .*$' \
 	 -e "$SSH_PROLOGUE"' error: PAM: authentication error for illegal user  ?.+ from '"$IP_REGEX"'$' \
-	 -e "$SSH_PROLOGUE"' PAM [[:digit:]] more authentication failures?; logname= uid=0 euid=0 tty=ssh ruser= rhost='"$IP_REGEX"'  user=root$' \
+	 -e "$SSH_PROLOGUE"' PAM [[:digit:]] more authentication failures?; logname= uid=0 euid=0 tty=ssh ruser= rhost='"$IP_REGEX"'(  :?user=.*)?$' \
 	 -e "$SSH_PROLOGUE"' pam_unix\(sshd:auth\): check pass; user unknown$' \
 	 -e "$SSH_PROLOGUE"' pam_unix\(sshd:auth\): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost='"$IP_REGEX"'(  user=.+)?$' \
 	 -e "$SSH_PROLOGUE"' error: Received disconnect from '"$IP_REGEX"' port [[:digit:]]{4,5}:[[:digit:]]+: .+$' \
@@ -192,13 +207,18 @@ ssh() {
 	 -e "$SSH_PROLOGUE"' Connection reset by '"$IP_REGEX"' port [[:digit:]]{4,5} \[preauth\]$' \
 	 -e "$SSH_PROLOGUE"' Connection reset by '"$IP_REGEX"' port [[:digit:]]{4,5}$' \
 	 -e "$SSH_PROLOGUE"' (fatal: )?Unable to negotiate with '"$IP_REGEX"' port [[:digit:]]{4,5}: no matching key exchange method found. Their offer: [[:alnum:],-]+ \[preauth\]$' \
+	 -e "$SSH_PROLOGUE"' (fatal: )?Unable to negotiate with '"$IP_REGEX"' port [[:digit:]]{4,5}: no matching cipher found. Their offer: [[:alnum:].,@-]+ \[preauth\]$' \
 	 -e "$SSH_PROLOGUE"' (fatal: )?Unable to negotiate with '"$IP_REGEX"' port [[:digit:]]{4,5}: no matching host key type found. Their offer: [[:alnum:]-]+ \[preauth\]$' \
 	 -e "$SSH_PROLOGUE"' Bad protocol version identification .* from '"$IP_REGEX"' port [[:digit:]]+$' \
-	 -e "$SSH_PROLOGUE"' ssl_dispatch_run_fatal: Connection from '"$IP_REGEX"' port [[:digit:]]+: message authentication code incorrect \[preauth\]$' \
+	 -e "$SSH_PROLOGUE"' ssh_dispatch_run_fatal: Connection from '"$IP_REGEX"' port [[:digit:]]+: message authentication code incorrect \[preauth\]$' \
 	 -e "$SSH_PROLOGUE"' Bad packet length [[:digit:]]+. \[preauth\]$' \
 	 -e "$SSH_PROLOGUE"' Did not receive identification string from '"$IP_REGEX"'' \
 	 -e "$SSH_PROLOGUE"' reverse mapping checking getaddrinfo for [[:alnum:].-]+ \['"$IP_REGEX"'\] failed - POSSIBLE BREAK-IN ATTEMPT!' \
 	 -e "$SSH_PROLOGUE"' Address '"$IP_REGEX"' maps to [[:alnum:].-]+, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!' \
+	 -e "$SSH_PROLOGUE"' Could not write ident string to '"$IP_REGEX"' port [[:digit:]]+' \
+	 -e "$SSH_PROLOGUE"' Accepted publickey for .*' \
+	 -e "$SSH_PROLOGUE"' pam_unix\(sshd:session\): session opened for user .* by \(uid=0\)$' \
+	 -e "$SSH_PROLOGUE"' pam_unix\(sshd:session\): session closed for user .*$' \
 	 -e "$SSH_PROLOGUE"' Server listening on (0.0.0.0|::) port 22.$'
 }
 
@@ -248,8 +268,21 @@ pygopherd() {
 }
 
 smartd() {
-	egrep -ve 'Device: /dev/sda \[SAT\], SMART Usage Attribute: 190 Temperature_Case changed from 7[34] to 7[34]$' \
-	 -e 'Device: /dev/sdb \[SAT\], SMART Usage Attribute: 194 Temperature_Celsius changed from 15[03] to 15[03]$'
+	# TODO should we be worried about these temperature changes?
+	egrep -ve 'Device: /dev/sda \[SAT\], SMART Usage Attribute: 190 Temperature_Case changed from .* to .*$' \
+	 -e 'Device: /dev/sdb \[SAT\], SMART Usage Attribute: 194 Temperature_Celsius changed from .* to .*$'
+}
+
+huginn() {
+	# TODO figure out a way to not filter literally everything from workers out
+	egrep -ve 'steevie huginn-jobs@.*service\[.*\]:  --> Sleeping for 15 seconds' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: Queuing schedule for .*' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: Queuing event propagation' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: .* received:' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: Agent#[[:digit:]]+: Fetching' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: Agent#[[:digit:]]+: Extracting' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]: Agent#[[:digit:]]+: Values extracted:' \
+	 -e 'steevie huginn-jobs@.*service\[.*\]:'
 }
 
 misc() {
@@ -280,5 +313,6 @@ journalctl \
 | sandstorm \
 | login \
 | smartd \
+| huginn \
 | misc \
 | grep -v '^-- Reboot --$'

@@ -1,49 +1,35 @@
-.Dd June 20, 2019
-.Dt RUN-BORG 8
+.Dd February 11, 2020
+.Dt WITH-BORG-LOCK 8
 .Os steevie
 .Sh NAME
-.Nm run-borg
-.Nd run
-.Xr borg 1
-with the standard parameters for a system backup
+.Nm with-borg-lock
+.Nd run a program while holding
+.Xr run-borg.lock 5
 .Sh SYNOPSIS
 .Nm
+.Op Fl w
+.Ar command
+.Op Ar arguments...
 .Sh DESCRIPTION
 .Nm
-sets up the system to perform a backup and then invokes
-.Xr borg-create 1
-to do so. Specifically, it:
-.Bl -enum
-.It
-Acquires the system Borg lock
-.Xr borg.lock 5
-(or bails out)
-.It
-Creates a recursive ZFS snapshot of
-.Pa /
-and mounts it at
-.Pa /media/borg-stage
-.It
-Determines whether to include system files based on the presence of
-.Pa /var/local/borg-trigger-system-backup
-.It
-Invokes
-.Xr borg-create 1
-with the standard parameters for compression, cache exclusion, etc.
+atomically acquires
+.Xr run-borg.lock 5
+and then runs
+.Ar command .
+The options are as follows:
+.Bl -hang
+.It Fl w
+Instead of exiting when the lock can't be acquired, retry in a loop until success.
+.It Cm --
+Stop option processing.
 .El
-.Pp
-There are no options.
-If you need something else, use
-.Xr run-borg-custom 8 .
 .Sh EXIT CODE
 .Ex -std
 .Sh AUTHORS
 .An AJ Jordan Aq Mt alex@strugee.net
 .Sh BUGS
 .Nm
-does not clean up its lockfile or temporary ZFS snapshots if it is killed.
-There may be a problematic glob passed to
-.Ar --exclude
-and
-.Nm
-may not handle LXD datasets right.
+does not clean up
+.Xr run-borg.lock 5
+if it is killed.
+

@@ -58,6 +58,13 @@ bin/bundler
 bin/sandstorm
 bin/spk
 lib/python*
+
+# Managed by SaltStack
 src/equivs
 src/znc-playback
 lib/znc
+include/dlib
+lib/cmake/dlib
+lib/libdlib.so*
+lib/pkgconfig/dlib*
+src/*dlib

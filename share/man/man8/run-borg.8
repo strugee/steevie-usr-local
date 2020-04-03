@@ -12,7 +12,8 @@ with the standard parameters for a system backup
 .Nm
 sets up the system to perform a backup and then invokes
 .Xr borg-create 1
-to do so. Specifically, it:
+to do so.
+Specifically, it:
 .Bl -enum
 .It
 Acquires the system Borg lock
@@ -50,15 +51,6 @@ property is set to
 then
 .Nm
 will destroy the newly-created snapshot of this dataset before running the backup.
-.Sh DIAGNOSTICS
-When running under
-.Xr chronic 1 ,
-stderr output for the following errors is suppressed:
-.Bl -bullet
-.It
-Failure to acquire
-.Xr run-borg.lock 5
-.El
 .Sh EXIT STATUS
 .Ex -std
 .Pp
@@ -69,6 +61,15 @@ is running under
 Specifically, errors that cause stderr to be suppressed (see
 .Sx DIAGNOSTICS )
 also do not cause a nonzero exit code.
+.Sh DIAGNOSTICS
+When running under
+.Xr chronic 1 ,
+stderr output for the following errors is suppressed:
+.Bl -bullet
+.It
+Failure to acquire
+.Xr run-borg.lock 5
+.El
 .Sh AUTHORS
 .An AJ Jordan Aq Mt alex@strugee.net
 .Sh BUGS

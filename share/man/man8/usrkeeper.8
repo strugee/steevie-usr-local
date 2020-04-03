@@ -1,0 +1,54 @@
+.Dd April 3, 2020
+.Dt USRKEEPER 8
+.Os steevie
+.Sh NAME
+.Nm usrkeeper
+.Nd thin wrapper around
+.Xr etckeeper 8
+that targets
+.Pa /usr
+instead
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar arguments...
+.Sh DESCRIPTION
+.Nm
+invokes
+.Xr etckeeper 8
+with
+.Fl d Cm /usr/local ,
+which causes
+.Xr etckeeper 8
+to operate on
+.Pa /usr/local
+instead of
+.Pa /etc .
+For a list of valid
+.Ar command
+parameters, consult
+.Xr etckeeper 8 .
+They are the same.
+.Pp
+Note, however, that
+.Ql usrkeeper vcs push
+behavior is specially modified so that the invoking user is the one that does the push.
+This is to allow for the use of the user's own SSH keys.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr etckeeper 8
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net
+.Sh SECURITY CONSIDERATIONS
+The special handling of
+.Ql vcs push
+temporarily sets
+.Pa .git
+to be owned by the invoking user, so that a process owned by them may read/write this path.
+This can be used as a vector to escalate to a root shell.
+Do not allow users who are not ultimately trusted to run
+.Nm
+under
+.Xr sudo 8
+or similar.

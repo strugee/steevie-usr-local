@@ -2,6 +2,10 @@
 # TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
 # TODO: write to a logfile
 
+cert_identity() {
+	sha256sum /etc/letsencrypt/live/$1/cert.pem | cut -d' ' -f1
+}
+
 if [ $(id -u) -ne 0 ]; then
 	echo 'renew-letsencrypt: not invoked as root; bailing'
 	exit 1
@@ -34,9 +38,9 @@ if [ "$1" = _post_hook ]; then
 	exit $FAILED
 fi
 
-MAIN_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem))
-MAIL_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem))
-ZNC_CERT_INODE=$(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem))
+MAIN_CERT_UNIQUEID=$(cert_identity strugee.net)
+MAIL_CERT_UNIQUEID=$(cert_identity mail.strugee.net)
+ZNC_CERT_UNIQUEID=$(cert_identity znc.strugee.net)
 
 etckeeper commit "Commit changes prior to renew-letsencrypt run"
 
@@ -50,7 +54,7 @@ fi
 
 # TODO: consider migrating this to --renew-hook
 
-if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.net/cert.pem)) ]; then
+if [ $MAIN_CERT_UNIQUEID != $(cert_identity strugee.net) ]; then
 	echo "Rebuilding ejabberd certificates due to updated certificate."
 	generate-ejabberd-bundle
 	echo "Rebuilding Cockpit certificates due to updated certificate."
@@ -61,14 +65,14 @@ if [ $MAIN_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/strugee.n
 	systemctl restart cockpit
 fi
 
-if [ $MAIL_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/mail.strugee.net/cert.pem)) ]; then
+if [ $MAIL_CERT_UNIQUEID != $(cert_identity mail.strugee.net) ]; then
 	echo "Restarting Postfix due to updated certificate."
 	systemctl restart postfix
 	echo "Restarting Dovecot due to updated certificate."
 	systemctl restart dovecot
 fi
 
-if [ $ZNC_CERT_INODE != $(stat -c %i $(realpath /etc/letsencrypt/live/znc.strugee.net/cert.pem)) ]; then
+if [ $ZNC_CERT_UNIQUEID != $(cert_identity znc.strugee.net) ]; then
 	echo "Rebuilding ZNC certificates due to updated certificate."
 	generate-znc-bundle
 	echo "Not restarting ZNC because client connections will cause a certificate reload."

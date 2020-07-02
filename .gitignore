@@ -62,6 +62,7 @@ lib/python*
 # Managed by SaltStack
 src/equivs
 src/znc-playback
+src/znc-clientbuffer
 lib/znc
 include/dlib
 lib/cmake/dlib

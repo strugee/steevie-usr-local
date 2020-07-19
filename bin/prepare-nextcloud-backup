@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -eu
+umask 6
+
+now() {
+	date +%s | tr -d '\n'
+}
+
+usage() {
+	exec 1>&2
+        echo 'Usage: prepare-nextcloud-backup OLD_VERSION NEW_VERSION'
+	exit 1
+}
+
+if [ $(id -u) -ne 0 ]; then
+	echo 'prepare-nextcloud-backup: not invoked as root; bailing'
+        exit 1
+fi
+
+# ${param:-} expands to empty string if unset
+
+if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
+	usage
+fi
+
+OLDVER=$1
+NEWVER=$2
+
+echo 'You will be prompted for the MySQL password.'
+mysqldump -u root -p nextcloud | pv -W > /var/backups/nextcloud/pre-nextcloud-$OLDVER-to-$NEWVER-$(now).sql
+
+echo 'Taking ZFS snapshot.'
+zfs snapshot -r rpool@pre-nextcloud-$OLDVER-to-$NEWVER-$(now)
+
+echo 'Attempting to warm update backup filesystem cache.'
+tar c --exclude='/srv/http/nextcloud/data' /srv/http/nextcloud > /dev/null
+
+echo 'Ready.'

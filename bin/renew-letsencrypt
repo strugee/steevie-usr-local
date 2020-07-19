@@ -2,6 +2,8 @@
 # TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
 # TODO: write to a logfile
 
+set -eu pipefail
+
 cert_identity() {
 	sha256sum /etc/letsencrypt/live/$1/cert.pem | cut -d' ' -f1
 }

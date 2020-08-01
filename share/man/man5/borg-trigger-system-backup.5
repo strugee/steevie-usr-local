@@ -1,0 +1,28 @@
+.Dd July 31, 2020
+.Dt BORG-TRIGGER-SYSTEM-BACKUP 5
+.Os steevie
+.Sh NAME
+.Nm borg-trigger-system-backup
+.Nd file that informs
+.Xr run-borg 8
+that a
+.Xr apt 8
+transaction has occurred
+.Sh DESCRIPTION
+.Pa /var/local/borg-trigger-system-backup
+is an empty file created in an APT post-install hook (so whenever APT performs an install, upgrade, removal, etc.).
+Its purpose is to inform
+.Xr run-borg 8
+that such a transaction has taken place, and that
+.Xr run-borg 8
+should therefore back up system directories that would normally be skipped for performance reasons.
+.Pp
+It is ignored by
+.Xr run-borg-custom 8 .
+.Sh SEE ALSO
+.Pa /etc/apt/apt.conf.d/00borg-system-trigger ,
+.Xr apt.conf 5 ,
+.Xr run-borg 8
+.Sh AUTHORS
+Originally introduced by
+.An AJ Jordan Aq Mt alex@strugee.net

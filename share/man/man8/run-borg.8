@@ -37,8 +37,18 @@ Cleans up the borg-stage ZFS snapshot, removes
 and releases the system Borg lock
 .El
 .Pp
-There are no options.
-If you need something else, use
+There is a single option:
+.Ar -v
+can be passed to increase the verbosity of
+.Xr borg 1
+to
+.Li INFO .
+Do not use this flag in any context except an interactive console.
+It is intended only for situations in which
+.Nm
+runs are being manually supervised every day due to there being more data to upload than is allowed in a single rate limit period.
+.Pp
+If you need anything else, particularly control over what is chosen for backup, use
 .Xr run-borg-custom 8 .
 .Em However ,
 the behavior of

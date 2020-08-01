@@ -7,6 +7,14 @@ set -eu
 
 . $(dirname $0)/../lib/run-borg/functions.sh
 
+BORG_FLAGS=''
+
+while ! [ -z ${1+x} ]; do
+	if [ $1 = '-v' ]; then
+		BORG_FLAGS='-v'
+	fi
+done
+
 test_is_root
 
 DOTLOCK_ARGS=""
@@ -35,7 +43,7 @@ fi
 
 cd /media/borg-stage
 
-borg create --progress --stats --compression auto,lzma,6 \
+borg create $BORG_FLAGS --progress --stats --compression auto,lzma,6 \
 --exclude root/.gdfuse/default/cache \
 --exclude root/.cache \
 --exclude home/*/.cache \

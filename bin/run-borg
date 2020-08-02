@@ -12,6 +12,7 @@ BORG_FLAGS=''
 while ! [ -z ${1+x} ]; do
 	if [ $1 = '-v' ]; then
 		BORG_FLAGS='-v'
+		shift
 	fi
 done
 

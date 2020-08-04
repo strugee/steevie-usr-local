@@ -30,17 +30,17 @@ fi
 test_is_root
 
 lockfile_acquire
+trap lockfile_release EXIT
 
 BORG_TAG="customrun-$1"
 shift
 
-# TODO trap crashes and run gc()
-
-# Garbage-collect old staging snapshots in case we crashed last time
+# Garbage-collect old staging snapshots in case we somehow failed to clean up last time
 gc_if_needed
 
 # Freeze a view of the filesystem at /media/borg-stage so Borg backups are atomic
 freeze_fs
+trap 'gc; lockfile_release' EXIT
 
 cd /media/borg-stage
 
@@ -54,10 +54,3 @@ borg create $BORG_FLAGS --progress --stats --compression auto,lzma,6 \
 --exclude var/log \
 /media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)-$BORG_TAG \
 $@
-
-# Need to not be in /media/borg-stage so that it can be unmounted
-cd - >/dev/null
-
-gc
-
-lockfile_release

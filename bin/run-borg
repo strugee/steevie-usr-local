@@ -28,14 +28,14 @@ test_is_root
 DOTLOCK_ARGS=""
 
 lockfile_acquire
+trap lockfile_release EXIT
 
-# TODO trap crashes and run gc
-
-# Garbage-collect old staging snapshots in case we crashed last time
+# Garbage-collect old staging snapshots in case we somehow failed to clean up last time
 gc_if_needed
 
 # Freeze a view of the filesystem so Borg backups are atomic
 freeze_fs
+trap 'gc; lockfile_release' EXIT
 
 # It takes a *long* time to walk system directories so we only do so when
 # triggered to do so by a dpkg postrun hook.
@@ -74,11 +74,5 @@ snap \
 lxd \
 $SYSTEM_DIRS
 
-# Need to not be in /media/borg-stage so that it can be unmounted
-cd - >/dev/null
-
-gc
-
+# We don't do this in a `trap`ped cleanup routine so that it is left for next time if the script fails.
 rm -f /var/local/borg-trigger-system-backup
-
-lockfile_release

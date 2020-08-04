@@ -11,8 +11,15 @@ BORG_FLAGS=''
 
 while ! [ -z ${1+x} ]; do
 	if [ $1 = '-v' ]; then
-		BORG_FLAGS='-v'
+		BORG_FLAGS="$BORG_FLAGS -v"
 		shift
+		continue
+	fi
+
+	if [ $1 = '-l' ]; then
+		BORG_FLAGS="$BORG_FLAGS --list"
+		shift
+		continue
 	fi
 done
 

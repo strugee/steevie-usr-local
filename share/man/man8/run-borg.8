@@ -1,4 +1,4 @@
-.Dd July 31, 2020
+.Dd August 4, 2020
 .Dt RUN-BORG 8
 .Os steevie
 .Sh NAME
@@ -38,14 +38,20 @@ Cleans up the borg-stage ZFS snapshot, removes
 and releases the system Borg lock
 .El
 .Pp
-There is a single option:
+There are two options:
 .Ar -v
 can be passed to increase the verbosity of
 .Xr borg 1
 to
-.Li INFO .
-Do not use this flag in any context except an interactive console.
-It is intended only for situations in which
+.Li INFO ,
+and
+.Ar -l
+can be passed to make
+.Xr borg-create 1
+list filesystem objects as they are processed.
+.Pp
+Do not use these flags in any context except an interactive console.
+They are intended only for situations in which
 .Nm
 runs are being manually supervised every day due to there being more data to upload than is allowed in a single rate limit period.
 .Pp

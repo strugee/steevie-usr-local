@@ -19,7 +19,10 @@ logging_init_channels() {
 	# approximately ordered. See the description of --stderr-priority= in systemd-cat(1).
 
 	# Abort if we've already done setup
-	test -z ${INFO_DIRECTWRITE_FIFO+x} || return
+	if ! [ -z ${INFO_DIRECTWRITE_FIFO+x} ]; then
+		echo 'warning: called logging_init_channels more than once; this may produce unexpected and untested results'
+		return
+	fi
 
 	STDOUT_FIFO=$(mktemp -u)
 	mkfifo -m 0600 $STDOUT_FIFO

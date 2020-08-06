@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-KEY=D825FD54D9B940FF0FFFB31AA4FDB7BE12F63EC3
+set -eu
+trap 'echo caught an error\; running \`gpg --refresh-keys\` as root may resolve expired key problems' ERR
+
+KEY=C46D8E7A3F13AD1C8EC6784843BF769C4ACA8B96
 TMPDIR=$(sudo -u nobody mktemp -d)
 
 gpg --export $KEY | sudo -u nobody gpg --homedir $TMPDIR --import

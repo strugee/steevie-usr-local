@@ -1,0 +1,29 @@
+.Dd August 5, 2020
+.Dt UPDATESRVDEFAULT 8
+.Os steevie
+.Sh NAME
+.Nm updatesrvdefault
+.Nd run
+.Xr git-pull 1
+in
+.Pa /srv/http/default
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+.Nm
+runs
+.Xr git-pull 1
+to update the git clone in
+.Pa /srv/http/default ,
+verifying commits'
+.Xr gpg 1
+signatures as it does so.
+In order to do this, it sets up a temporary keyring inside a directory in
+.Pa /tmp .
+It also takes pains to avoid running network-facing code as the superuser - it is run mostly as the nobody user instead.
+.Pp
+There are no options.
+.Sh EXIT STATUS
+.Ex -std
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net

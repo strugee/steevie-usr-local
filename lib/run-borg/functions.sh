@@ -24,12 +24,6 @@ logging_init_channels() {
 		return
 	fi
 
-	STDOUT_FIFO=$(mktemp -u)
-	mkfifo -m 0600 $STDOUT_FIFO
-
-	STDERR_FIFO=$(mktemp -u)
-	mkfifo -m 0600 $STDERR_FIFO
-
 	INFO_DIRECTWRITE_FIFO=$(mktemp -u)
 	mkfifo -m 0600 $INFO_DIRECTWRITE_FIFO
 
@@ -50,22 +44,26 @@ logging_init_channels() {
 	# a cleanup function as a part of their EXIT traps.
 	(trap "rm $INFO_DIRECTWRITE_FIFO" EXIT && <$INFO_DIRECTWRITE_FIFO systemd-cat -t $(basename $0)) &
 	(trap "rm $WARN_DIRECTWRITE_FIFO" EXIT && <$WARN_DIRECTWRITE_FIFO systemd-cat -t $(basename $0) -p warning) &
-
-	# Can't use /dev/stdout for tee because | overwrites the inherited stdout, so we set up an
-	# fd 3 instead. Same for stderr and fd 4.
-	exec 3<&1 # Duplicate our original stdout to fd 3
-	(trap "rm $STDOUT_FIFO" EXIT && <$STDOUT_FIFO tee /dev/fd/3 > $INFO_DIRECTWRITE_FIFO) &
-	exec 4<&2 # Use fd 4 for the original stderr
-	(trap "rm $STDERR_FIFO" EXIT && <$STDERR_FIFO tee /dev/fd/4 > $WARN_DIRECTWRITE_FIFO) &
 }
 
 logging_init() {
 	# IMPORTANT: you should read the comments for logging_init_channels()
 	logging_init_channels
 
-	# Send stdout to the logging channel
+	STDOUT_FIFO=$(mktemp -u)
+	mkfifo -m 0600 $STDOUT_FIFO
+	# Can't use /dev/stdout for tee because | overwrites the inherited stdout, so we set up an
+	# fd 3 instead. Same for stderr and fd 4, below.
+	exec 3<&1 # Duplicate our original stdout to fd 3
+	(trap "rm $STDOUT_FIFO" EXIT && <$STDOUT_FIFO tee /dev/fd/3 > $INFO_DIRECTWRITE_FIFO) &
+
+	STDERR_FIFO=$(mktemp -u)
+	mkfifo -m 0600 $STDERR_FIFO
+	exec 4<&2 # Use fd 4 for the original stderr
+	(trap "rm $STDERR_FIFO" EXIT && <$STDERR_FIFO tee /dev/fd/4 > $WARN_DIRECTWRITE_FIFO) &
+
+	# Send stdout and stderr to their logging channels
 	exec 1>$STDOUT_FIFO
-	# Ditto stderr
 	exec 2>$STDERR_FIFO
 }
 

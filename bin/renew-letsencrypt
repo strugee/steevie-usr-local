@@ -2,7 +2,7 @@
 # TODO: improve this to not stop Apache when `letsencrypt renew --domain` works
 # TODO: write to a logfile
 
-set -eu pipefail
+set -eu
 
 cert_identity() {
 	sha256sum /etc/letsencrypt/live/$1/cert.pem | cut -d' ' -f1
@@ -15,29 +15,31 @@ fi
 
 # Internal
 
-if [ "$1" = _pre_hook ]; then
-	echo "Stopping Apache, pump.io and Sandstorm."
-	if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm; then
-		exit 0
-	else
-		echo "Stopping services failed. This probably indicates a serious misconfiguration."
-		echo "Mailing root."
-		echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io or Sandstorm" root
-		exit 1
+if ! [ -z ${1+x} ]; then
+	if [ "$1" = _pre_hook ]; then
+		echo "Stopping Apache, pump.io and Sandstorm."
+		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm; then
+			exit 0
+		else
+			echo "Stopping services failed. This probably indicates a serious misconfiguration."
+			echo "Mailing root."
+			echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io or Sandstorm" root
+			exit 1
+		fi
 	fi
-fi
 
-if [ "$1" = _post_hook ]; then
-	FAILED=0
-	echo "Unconditionally restarting Apache."
-	systemctl start apache2 || FAILED=1
-	echo "Unconditionally restarting pump.io."
-	# XXX uncomment when I unmask pump.io@mongodb
-	systemctl start pump.io@mongodb #|| FAILED=1
-	echo "Unconditionally restarting Sandstorm."
-	systemctl start sandstorm || FAILED=1
+	if [ "$1" = _post_hook ]; then
+		FAILED=0
+		echo "Unconditionally restarting Apache."
+		systemctl start apache2 || FAILED=1
+		echo "Unconditionally restarting pump.io."
+		# XXX uncomment when I unmask pump.io@mongodb
+		systemctl start pump.io@mongodb #|| FAILED=1
+		echo "Unconditionally restarting Sandstorm."
+		systemctl start sandstorm || FAILED=1
 
-	exit $FAILED
+		exit $FAILED
+	fi
 fi
 
 MAIN_CERT_UNIQUEID=$(cert_identity strugee.net)
@@ -83,4 +85,4 @@ if [ $ZNC_CERT_UNIQUEID != $(cert_identity znc.strugee.net) ]; then
 	echo "Not restarting ZNC because client connections will cause a certificate reload."
 fi
 
-etckeeper commit "Renew and rebuild TLS certificates"
+etckeeper commit "Renew and rebuild TLS certificates" || true

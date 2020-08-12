@@ -1,0 +1,39 @@
+.Dd August 12, 2020
+.Dt GC-BORG-SNAPSHOT 8
+.Os steevie
+.Sh NAME
+.Nm gc-borg-snapshot
+.Nd garbage-collect the
+.Xr run-borg 8
+snapshot
+.Sh SYNOPSIS
+.Nm
+.Op Fl f
+.Sh DESCRIPTION
+.Nm
+garbage-collects the
+.Cm borg-stage
+.Xr zfs 8
+snapshot used by
+.Xr run-borg 8
+and friends.
+It automatically detects if this operation needs to be done and will bail out if not.
+To override this behavior and
+.Em always
+attempt garbage collection, pass
+.Fl f .
+.Pp
+.Nm
+will acquire
+.Xr run-borg.lock 5 ,
+reporting an error if this operation fails.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr run-borg.lock 5 ,
+.Xr run-borg 8 ,
+.Xr zfs 8
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net
+.Sh BUGS
+Several useful commandline options do not exist yet.

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -eu
+
+. $(dirname $0)/../lib/run-borg/functions.sh
+
+test_is_root
+
+DOTLOCK_ARGS=""
+
+lockfile_acquire
+trap lockfile_release EXIT
+
+if [ ${1:-''} = -f ]; then
+	gc
+else
+	gc_if_needed
+fi

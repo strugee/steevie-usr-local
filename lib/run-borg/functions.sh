@@ -116,7 +116,7 @@ gc() {
 	# Need to not be in /media/borg-stage so that it can be unmounted
 	# gc() may be called on startup to clean up from last time, so we only mutate $PWD if necessary
 	case $PWD/ in
-		/media/borg-stage) cd - >/dev/null;;
+		/media/borg-stage/) cd - >/dev/null;;
 	esac
 
 	mountpoint -q /media/borg-stage && umount -R /media/borg-stage

@@ -14,7 +14,7 @@ SOFTERR_EXITCODE=1
 $CHRONIC && SOFTERR_EXITCODE=0
 
 # Just a constant
-BORG_STD_FLAGS='--compression auto,lzma,6'
+BORG_STD_FLAGS='--compression auto,lzma,6 --lock-wait 10'
 
 logging_init_channels() {
 	# Note well: since we are sending stdout and stderr to different systemd-cat processes to get

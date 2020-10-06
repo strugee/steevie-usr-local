@@ -17,13 +17,14 @@ fi
 
 if ! [ -z ${1+x} ]; then
 	if [ "$1" = _pre_hook ]; then
-		echo "Stopping Apache, pump.io and Sandstorm."
-		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm; then
+		echo "Stopping Apache, pump.io, Sandstorm, and Bitwarden."
+		# TODO stop only the LXD Bitwarden proxy device, not the whole container
+		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm && lxc stop bitwarden; then
 			exit 0
 		else
 			echo "Stopping services failed. This probably indicates a serious misconfiguration."
 			echo "Mailing root."
-			echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io or Sandstorm" root
+			echo "Execution of \`systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm && lxc stop bitwarden\` failed while renewing Let's Encrypt certificates.\n\nThis probably indicates a serious misconfiguration. Please investigate as soon as possible.\n\n - crond" | mail -s "renew-letsencrypt: failed to stop Apache, pump.io, Sandstorm or Bitwarden" root
 			exit 1
 		fi
 	fi
@@ -37,6 +38,8 @@ if ! [ -z ${1+x} ]; then
 		systemctl start pump.io@mongodb #|| FAILED=1
 		echo "Unconditionally restarting Sandstorm."
 		systemctl start sandstorm || FAILED=1
+		echo "Unconditionally restarting Bitwarden."
+		lxc start bitwarden || FAILED=1
 
 		exit $FAILED
 	fi

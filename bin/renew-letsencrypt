@@ -35,7 +35,8 @@ if ! [ -z ${1+x} ]; then
 		systemctl start apache2 || FAILED=1
 		echo "Unconditionally restarting pump.io."
 		# XXX uncomment when I unmask pump.io@mongodb
-		systemctl start pump.io@mongodb #|| FAILED=1
+		# DO NOT COMMENT JUST FAILED=1 because then Sandstorm and Bitwarden will not be restarted due to set -e.
+		#systemctl start pump.io@mongodb || FAILED=1
 		echo "Unconditionally restarting Sandstorm."
 		systemctl start sandstorm || FAILED=1
 		echo "Unconditionally restarting Bitwarden."

@@ -18,10 +18,10 @@ elif [ $(date +%A) = Sunday ]; then
 	# Weekly backup
 	do_backup weekly-
 	# This keeps four weeks of backups, which is technically different than a month. But honestly, who cares. This is Good Enough™.
-	zfs list -Ho name -d1 -t snapshot | grep '@weekly' | head --lines=-4 | xargs -n 1 zfs destroy -r
+	# Sorting by createtxg also sorts by creation time
+	zfs list -Ho name -d1 -s createtxg -t snapshot | grep '@weekly' | head --lines=-4 | xargs -n 1 zfs destroy -r
 else
 	# Daily backup
 	do_backup daily-
-	# TODO should we be using `ls` here?
-	zfs list -Ho name -d1 -t snapshot | grep '@daily' | head --lines=-7 | xargs -n 1 zfs destroy -r
+	zfs list -Ho name -d1 -s createtxg -t snapshot | grep '@daily' | head --lines=-7 | xargs -n 1 zfs destroy -r
 fi

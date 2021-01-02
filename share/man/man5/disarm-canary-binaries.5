@@ -1,0 +1,25 @@
+.Dd January 1, 2021
+.Dt DISARM-CANARY-BINARIES 5
+.Os steevie
+.Sh NAME
+.Nm disarm-canary-binaries
+.Nd file which determines if canary binaries send security mail
+.Sh DESCRIPTION
+When
+.Pa /run/disarm-canary-binaries
+exists in the filesystem, canary-armed binaries such as
+.Xr gcc 1 ,
+.Xr g++ 1 ,
+and
+.Xr nc 1
+will disable information collection and mailing routines that are designed to raise alarms about security breaches.
+This is useful when the administrator has a legitimate use for these binaries; for example, when installing software that requires a compiler.
+.Pp
+.Nm
+should be created as an empty file.
+Its contents are ignored.
+.Sh SEE ALSO
+.Xr with-disarm 8
+.Sh AUTHORS
+Originally introduced by
+.An AJ Jordan Aq Mt alex@strugee.net

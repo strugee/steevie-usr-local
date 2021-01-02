@@ -6,6 +6,10 @@ set -eu
 
 test_is_root
 
+ARGSTR='COMMAND [ARGUMENTS...]'
+
+ensure_args "$ARGSTR" $@
+
 touch /run/disarm-canary-binaries
 
 trap 'rm -f /run/disarm-canary-binaries' EXIT

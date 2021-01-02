@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -eu
+
+. $(dirname $0)/../lib/common/functions.sh
+
+test_is_root
+
+touch /run/disarm-canary-binaries
+
+trap 'rm -f /run/disarm-canary-binaries' EXIT
+
+$@

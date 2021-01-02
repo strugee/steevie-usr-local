@@ -1,0 +1,31 @@
+.Dd January 1, 2021
+.Dt WITH-DISARM 8
+.Os steevie
+.Sh NAME
+.Nm with-disarm
+.Nd disarm canary binaries while a program runs
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar arguments...
+.Sh DESCRIPTION
+.Nm
+creates the
+.Xr disarm-canary-binaries 5
+file and then runs
+.Ar command .
+This means that
+.Ar command
+can run binaries such as
+.Xr gcc 1 ,
+.Xr g++ 1
+and
+.Xr nc 1
+without triggering security mail.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net
+.Sh BUGS
+None known

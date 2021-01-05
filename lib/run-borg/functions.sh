@@ -66,6 +66,6 @@ invoke_borg() {
 	--exclude var/backups \
 	--exclude var/tmp \
 	--exclude var/log \
-	/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
+	/media/gdrive/borg-2021::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
 	$@
 }

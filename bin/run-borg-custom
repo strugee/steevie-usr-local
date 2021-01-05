@@ -32,7 +32,7 @@ test_is_root
 lockfile_acquire
 trap lockfile_release EXIT
 
-BORG_TAG="customrun-$1"
+BORG_TAG="-customrun-$1"
 shift
 
 # Garbage-collect old staging snapshots in case we somehow failed to clean up last time
@@ -44,13 +44,4 @@ trap 'gc; lockfile_release' EXIT
 
 cd /media/borg-stage
 
-borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
---exclude root/.gdfuse/default/cache \
---exclude root/.cache \
---exclude home/*/.cache \
---exclude var/cache \
---exclude var/backups \
---exclude var/tmp \
---exclude var/log \
-/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)-$BORG_TAG \
-$@
+invoke_borg "$@"

@@ -17,7 +17,7 @@ SOFTERR_EXITCODE=1
 $CHRONIC && SOFTERR_EXITCODE=0
 
 # Just a constant
-BORG_STD_FLAGS='--compression auto,lzma,6 --lock-wait 10'
+BORG_STD_FLAGS='--compression auto,zstd,15 --lock-wait 10'
 
 lockfile_acquire() {
 	if ! dotlockfile -pr0 $DOTLOCK_ARGS /var/lock/run-borg.lock; then

@@ -58,7 +58,7 @@ freeze_fs() {
 }
 
 invoke_borg() {
-	borg create --progress --stats --compression auto,lzma,6 \
+	borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
 	--exclude root/.gdfuse/default/cache \
 	--exclude root/.cache \
 	--exclude home/*/.cache \
@@ -66,6 +66,6 @@ invoke_borg() {
 	--exclude var/backups \
 	--exclude var/tmp \
 	--exclude var/log \
-	/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)-$BORG_TAG \
+	/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
 	$@
 }

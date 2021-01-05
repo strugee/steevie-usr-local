@@ -51,15 +51,7 @@ fi
 
 cd /media/borg-stage
 
-borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
---exclude root/.gdfuse/default/cache \
---exclude root/.cache \
---exclude home/*/.cache \
---exclude var/cache \
---exclude var/backups \
---exclude var/tmp \
---exclude var/log \
-/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
+invoke_borg \
 etc \
 home \
 srv \

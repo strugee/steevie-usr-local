@@ -26,12 +26,15 @@ fi
 
 OLDVER=$1
 NEWVER=$2
+NOW=$(date +%s)
 
 echo 'You will be prompted for the MySQL password.'
-mysqldump -u root -p nextcloud | pv -W > /var/backups/nextcloud/pre-nextcloud-$OLDVER-to-$NEWVER-$(now).sql
+mysqldump -u root -p nextcloud | pv -W > /var/backups/nextcloud/pre-nextcloud-$OLDVER-to-$NEWVER-$NOW.sql
+
+SNAPNAME=pre-nextcloud-$OLDVER-to-$NEWVER-$NOW
 
 echo 'Taking ZFS snapshot.'
-zfs snapshot -r rpool@pre-nextcloud-$OLDVER-to-$NEWVER-$(now)
+zfs snapshot -r rpool/srv/nextcloud@$SNAPNAME rpool/var/lib/mysql@$SNAPNAME
 
 echo 'Attempting to warm update backup filesystem cache.'
 tar c --exclude='/srv/http/nextcloud/data' /srv/http/nextcloud > /dev/null

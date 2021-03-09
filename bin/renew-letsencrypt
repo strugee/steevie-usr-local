@@ -4,6 +4,10 @@
 
 set -eu
 
+. /usr/local/lib/common/functions.sh
+
+logging_init
+
 cert_identity() {
 	sha256sum /etc/letsencrypt/live/$1/cert.pem | cut -d' ' -f1
 }
@@ -17,6 +21,8 @@ fi
 
 if ! [ -z ${1+x} ]; then
 	if [ "$1" = _pre_hook ]; then
+		log_info 'Running as _pre_hook internal command.'
+
 		echo "Stopping Apache, pump.io, Sandstorm, and Bitwarden."
 		# TODO stop only the LXD Bitwarden proxy device, not the whole container
 		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm && lxc stop bitwarden; then
@@ -30,6 +36,8 @@ if ! [ -z ${1+x} ]; then
 	fi
 
 	if [ "$1" = _post_hook ]; then
+		log_info 'Running as _post_hook internal command.'
+
 		FAILED=0
 		echo "Unconditionally restarting Apache."
 		systemctl start apache2 || FAILED=1
@@ -45,6 +53,8 @@ if ! [ -z ${1+x} ]; then
 		exit $FAILED
 	fi
 fi
+
+log_info 'Running as toplevel script.'
 
 MAIN_CERT_UNIQUEID=$(cert_identity strugee.net)
 MAIL_CERT_UNIQUEID=$(cert_identity mail.strugee.net)

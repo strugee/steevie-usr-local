@@ -57,11 +57,23 @@ freeze_fs() {
 	zfs-mount-snapshots borg-stage /media/borg-stage
 }
 
+get_existing_homedirs() {
+	for i in $(getent passwd | cut -d: -f6); do
+		test -d $i && echo $i
+	done
+}
+
+get_homedir_caches() {
+	for i in $(get_existing_homedirs); do
+		test -d $i/.cache && echo $i/.cache
+	done
+}
+
 invoke_borg() {
 	borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
 	--exclude root/.gdfuse/default/cache \
 	--exclude root/.cache \
-	--exclude home/*/.cache \
+	$(for i in $(get_homedir_caches); do printf -- "--exclude $i "; done) \
 	--exclude var/cache \
 	--exclude var/backups \
 	--exclude var/tmp \

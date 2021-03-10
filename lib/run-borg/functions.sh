@@ -72,7 +72,6 @@ get_homedir_caches() {
 invoke_borg() {
 	borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
 	--exclude root/.gdfuse/default/cache \
-	--exclude root/.cache \
 	$(for i in $(get_homedir_caches); do printf -- "--exclude $i "; done) \
 	--exclude var/cache \
 	--exclude var/backups \

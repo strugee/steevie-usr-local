@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# TODO DRY this up with run-borg
 # TODO strip leading / characters from $@
 
 set -eu

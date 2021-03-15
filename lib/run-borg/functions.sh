@@ -38,10 +38,13 @@ lockfile_acquire() {
 		echo $(basename $0): failed to acquire lockfile >&$SOFTERR_STREAM
 		exit $SOFTERR_EXITCODE
 	fi
+
+	log_info 'acquired lockfile'
 }
 
 lockfile_release() {
 	dotlockfile -u /var/lock/run-borg.lock
+	log_info 'released lockfile'
 }
 
 gc() {
@@ -55,6 +58,8 @@ gc() {
 	# For some reason there's a weird alternate empty dataset mount underneath everything that doesn't unmount the first time around
 	mountpoint -q /media/borg-stage && umount -R /media/borg-stage
 	zfs destroy -r rpool@borg-stage
+	log_info 'ran garbage collection'
+
 }
 
 gc_if_needed() {
@@ -69,6 +74,7 @@ freeze_fs() {
 	zfs list -t snapshot -o name,net.strugee:borgignore -s name -H | grep 'on$' | cut -f1 | grep '@borg-stage' | xargs -n 1 zfs destroy
 	mkdir -p /media/borg-stage
 	zfs-mount-snapshots borg-stage /media/borg-stage
+	log_info 'froze filesystem'
 }
 
 get_existing_homedirs() {
@@ -84,6 +90,7 @@ get_homedir_caches() {
 }
 
 invoke_borg() {
+	log_info 'invoking borg'
 	borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
 	--exclude root/.gdfuse/default/cache \
 	$(for i in $(get_homedir_caches | sed 's;^/;;'); do printf -- "--exclude $i "; done) \
@@ -93,4 +100,5 @@ invoke_borg() {
 	--exclude var/log \
 	/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
 	$@
+	log_info 'borg-create complete'
 }

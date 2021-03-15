@@ -1,4 +1,4 @@
-.Dd August 4, 2020
+.Dd March 14, 2021
 .Dt RUN-BORG 8
 .Os steevie
 .Sh NAME
@@ -80,6 +80,8 @@ Specifically, errors that cause stderr to be suppressed (see
 .Sx DIAGNOSTICS )
 also do not cause a nonzero exit code.
 .Sh DIAGNOSTICS
+A copy of stdout, as well as some additional logging information, is sent to the systemd journal.
+.Pp
 When running under
 .Xr chronic 1 ,
 stderr output for the following errors is suppressed:

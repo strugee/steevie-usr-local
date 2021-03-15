@@ -27,6 +27,8 @@ test_is_root
 
 DOTLOCK_ARGS=""
 
+log_info 'starting run-borg'
+
 lockfile_acquire
 trap lockfile_release EXIT
 
@@ -47,6 +49,7 @@ BORG_TAG=''
 if test -e /var/local/borg-trigger-system-backup; then
 	SYSTEM_DIRS='bin lib lib64 sbin usr'
 	BORG_TAG='-withsystem'
+	log_info 'we are running a full-system backup'
 fi
 
 cd /media/borg-stage
@@ -68,3 +71,6 @@ $SYSTEM_DIRS
 
 # We don't do this in a `trap`ped cleanup routine so that it is left for next time if the script fails.
 rm -f /var/local/borg-trigger-system-backup
+log_info 'removed borg-trigger-system-backup'
+
+log_info 'run complete'

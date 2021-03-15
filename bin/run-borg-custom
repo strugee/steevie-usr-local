@@ -29,6 +29,7 @@ fi
 
 test_is_root
 
+log_info 'starting run-borg-custom'
 lockfile_acquire
 trap lockfile_release EXIT
 
@@ -45,3 +46,5 @@ trap 'gc; lockfile_release' EXIT
 cd /media/borg-stage
 
 invoke_borg "$@"
+
+log_info 'run complete'

@@ -12,6 +12,8 @@
 # Gotta hardcode this, unfortunately, because this is POSIX sh and POSIX doesn't let us determine where we're being sourced from
 . /usr/local/lib/common/functions.sh
 
+logging_init
+
 #############################################################
 # VARIABLE INITIALIZATION
 #############################################################

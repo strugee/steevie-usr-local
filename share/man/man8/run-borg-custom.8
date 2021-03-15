@@ -1,0 +1,78 @@
+.Dd March 14, 2021
+.Dt RUN-BORG 8
+.Os steevie
+.Sh NAME
+.Nm run-borg-custom
+.Nd run
+.Xr borg 1
+with a custom list of files to back up
+.Sh SYNOPSIS
+.Nm
+.Op Fl w
+.Op Fl s
+.Sh DESCRIPTION
+.Nm
+sets up the system to perform a backup and then invokes
+.Xr borg-create 1
+to do so.
+It follows the same procedure documented in
+.Xr run-borg 8 ,
+except that it has no concept of system backups and is not affected by
+.Pa /var/local/borg-trigger-system-backup .
+Instead of building a list of files to back up,
+.Nm
+takes these files from its commandline arguments.
+.Pp
+There are two options:
+.Fl w
+will cause
+.Nm
+to continually retry the acquisition of
+.Xr run-borg.lock 7
+instead of bailing out if it can't immediately do so,
+and
+.Fl s
+will cause
+.Xr borg-create 1
+to read special files such as block devices.
+.Pp
+The behavior of
+.Nm
+may be influenced by setting ZFS dataset properties.
+Specifically, if the
+.Li net.strugee:borgignore
+property is set to
+.Li on ,
+then
+.Nm
+will destroy the newly-created snapshot of this dataset before running the backup.
+.Sh EXIT STATUS
+.Ex -std
+.Pp
+This behavior is modified when
+.Nm
+is running under
+.Xr chronic 1 .
+Specifically, errors that cause stderr to be suppressed (see
+.Sx DIAGNOSTICS )
+also do not cause a nonzero exit code.
+.Sh DIAGNOSTICS
+A copy of stdout, as well as some additional logging information, is sent to the systemd journal.
+.Pp
+When running under
+.Xr chronic 1 ,
+stderr output for the following errors is suppressed:
+.Bl -bullet
+.It
+Failure to acquire
+.Xr run-borg.lock 5
+.El
+.Sh AUTHORS
+.An AJ Jordan Aq Mt alex@strugee.net
+.Sh BUGS
+.Nm
+does not have some flags that
+.Xr run-borg 8
+does, even though they would make sense in
+.Nm
+too.

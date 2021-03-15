@@ -5,8 +5,16 @@
 #  * $SOFTERR_STREAM
 #  * $SOFTERR_EXITCODE
 
+#############################################################
+# COMMON LIBRARY INITIALIZATION
+#############################################################
+
 # Gotta hardcode this, unfortunately, because this is POSIX sh and POSIX doesn't let us determine where we're being sourced from
 . /usr/local/lib/common/functions.sh
+
+#############################################################
+# VARIABLE INITIALIZATION
+#############################################################
 
 CHRONIC=false
 test $(ps -o comm= $PPID) = chronic && CHRONIC=true
@@ -18,6 +26,10 @@ $CHRONIC && SOFTERR_EXITCODE=0
 
 # Just a constant
 BORG_STD_FLAGS='--compression auto,zstd,15 --lock-wait 10'
+
+#############################################################
+# FUNCTION LIBRARY
+#############################################################
 
 lockfile_acquire() {
 	if ! dotlockfile -pr0 $DOTLOCK_ARGS /var/lock/run-borg.lock; then

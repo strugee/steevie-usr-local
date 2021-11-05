@@ -76,3 +76,8 @@ share/man/mandoc.db
 
 # Yarn cache
 share/.cache/yarn/v4
+
+# Symlinks that osquery upstream decided to put here
+# https://github.com/osquery/osquery/issues/7146
+bin/osqueryctl
+bin/osqueryi

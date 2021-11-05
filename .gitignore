@@ -75,4 +75,4 @@ bin/librephotosctl
 share/man/mandoc.db
 
 # Yarn cache
-/usr/local/share/.cache/yarn/v4
+share/.cache/yarn/v4

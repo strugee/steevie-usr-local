@@ -7,6 +7,7 @@ set -eu
 . $(dirname $0)/../lib/run-borg/functions.sh
 
 BORG_FLAGS=''
+BORG_TAG=''
 
 while ! [ -z ${1+x} ]; do
 	if [ $1 = '-v' ]; then
@@ -17,6 +18,13 @@ while ! [ -z ${1+x} ]; do
 
 	if [ $1 = '-l' ]; then
 		BORG_FLAGS="$BORG_FLAGS --list"
+		shift
+		continue
+	fi
+
+	if [ $1 = '-t' ]; then
+		BORG_TAG="-tag-$2"
+		shift
 		shift
 		continue
 	fi
@@ -44,10 +52,9 @@ trap 'gc; lockfile_release' EXIT
 # the dpkg hook. Ditto with /usr/lib/node_modules and npm. /boot isn't there
 # either because of tools like update-initramfs.
 SYSTEM_DIRS='usr/local usr/lib/node_modules'
-BORG_TAG=''
 if test -e /var/local/borg-trigger-system-backup; then
 	SYSTEM_DIRS='bin lib lib64 sbin usr'
-	BORG_TAG='-withsystem'
+	BORG_TAG='-withsystem$BORG_TAG'
 	log_info 'we are running a full-system backup'
 fi
 

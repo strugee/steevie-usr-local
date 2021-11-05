@@ -82,3 +82,6 @@ share/.cache/yarn/v4
 # https://github.com/osquery/osquery/issues/7146
 bin/osqueryctl
 bin/osqueryi
+
+# fontconfig junk - should check if this is still there after bookworm releases; apparently upstream is going to remove it
+share/fonts/.uuid

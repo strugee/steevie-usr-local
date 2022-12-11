@@ -98,7 +98,7 @@ invoke_borg() {
 	--exclude var/backups \
 	--exclude var/tmp \
 	--exclude var/log \
-	/media/gdrive/borg::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
+	ssh://fgl4136d@fgl4136d.repo.borgbase.com/./repo::steevie-$(date +%F-%H:%M-%a-%s)$BORG_TAG \
 	$@
 	log_info 'borg-create complete'
 }

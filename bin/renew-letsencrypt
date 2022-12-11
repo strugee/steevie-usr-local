@@ -25,7 +25,8 @@ if ! [ -z ${1+x} ]; then
 
 		echo "Stopping Apache, pump.io, Sandstorm, and Bitwarden."
 		# TODO stop only the LXD Bitwarden proxy device, not the whole container
-		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm && lxc stop bitwarden; then
+		# Need the full path to /snap/bin/lxc because apparently /snap/bin isn't on PATH in cronjobs.
+		if systemctl stop apache2 && systemctl stop pump.io@mongodb && systemctl stop sandstorm && /snap/bin/lxc stop bitwarden; then
 			exit 0
 		else
 			echo "Stopping services failed. This probably indicates a serious misconfiguration."

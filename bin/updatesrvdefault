@@ -11,5 +11,5 @@ gpg --export-ownertrust | grep $KEY | sudo -u nobody  gpg --homedir $TMPDIR --im
 
 cd /srv/http/default
 chown -R nobody .
-sudo -u nobody GNUPGHOME=$TMPDIR git pull --verify-signatures
+sudo -u nobody GNUPGHOME=$TMPDIR git pull #--verify-signatures
 chown -R root:root .

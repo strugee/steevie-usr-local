@@ -29,6 +29,9 @@ for orig in $(zfs list -rHo name -t snapshot | grep -F $name | cut -d@ -f1); do
 	# Query fstab for legacy mountpoints
 	[ $mountpoint = legacy ] && mountpoint=$(findmnt -sno TARGET $orig)
 
+	# LXD datasets set mountpoint=legacy, but aren't in fstab
+	[ -z $mountpoint ] && continue
+
 	# The sed command prepends a slash if it's not already there
 	# https://stackoverflow.com/a/40679203/1198896
 	mount -t zfs $orig@$name $topmount$(echo $mountpoint | sed 's;^[^/];/&;')

@@ -15,7 +15,11 @@ shift
 if [ $firstarg = 'vcs' ] && [ $1 = 'push' ]; then
 	cd /usr/local
 	chown -R $SUDO_USER:$SUDO_USER .git
+	# Suppress git complaining about dubious ownership
+	# https://github.blog/2022-04-12-git-security-vulnerability-announced/
+	chown $SUDO_USER .
 	sudo -u $SUDO_USER etckeeper $firstarg -d /usr/local/ $@
+	chown root .
 	exec chown -R root:staff .git
 fi
 

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+reset_perms() {
+	cd /usr/local
+	chown root .
+	chown -R root:staff .git
+}
+
 if [ $# = 0 ]; then
 	# Bug: etckeeper stdout gets unilaterally converted to stderr,
 	# but there isn't any stdout here anyway so who cares.
@@ -14,13 +20,13 @@ shift
 # This allows the use of SSH keys.
 if [ $firstarg = 'vcs' ] && [ $1 = 'push' ]; then
 	cd /usr/local
+	trap reset_perms EXIT
 	chown -R $SUDO_USER:$SUDO_USER .git
 	# Suppress git complaining about dubious ownership
 	# https://github.blog/2022-04-12-git-security-vulnerability-announced/
 	chown $SUDO_USER .
 	sudo -u $SUDO_USER etckeeper $firstarg -d /usr/local/ $@
-	chown root .
-	exec chown -R root:staff .git
+	exit
 fi
 
 exec etckeeper $firstarg -d /usr/local/ $@

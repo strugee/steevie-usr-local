@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -eu
+
+check_startup
+
+call_pgdump matrix-synapse synapse
+
+# We don't take a ZFS snapshot because there doesn't seem to be anything in /var/lib/matrix-synapse but static media, and snapshotting this would require snapshotting all of /var.
+
+finalize

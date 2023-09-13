@@ -35,6 +35,13 @@ call_mysqldump() {
 	mysqldump -u root -p $DBNAME | pv -W > /var/backups/$DBNAME/pre-$DBNAME-$OLDVER-to-$NEWVER-$NOW.sql
 }
 
+call_mysqldump() {
+	UNIX_USER=$1
+	DBNAME=$2
+	mkdir -p /var/backups/$DBNAME
+	sudo -u $UNIX_USER pg_dump $DBNAME | pv -W > /var/backups/$DBNAME/pre-$DBNAME-$OLDVER-to-$NEWVER-$NOW.sql
+}
+
 take_zfs_snapshot() {
 	ZFS_SVC_DATASET=$1
 	ZFS_DB_DATASET=$2

@@ -8,7 +8,7 @@ now() {
 
 OLDVER=$1
 NEWVER=$2
-NOW=$(date +%s)
+NOW=$(now)
 
 usage() {
 	exec 1>&2

@@ -12,20 +12,20 @@ NOW=$(now)
 
 usage() {
 	exec 1>&2
-        echo "Usage: $0 OLD_VERSION NEW_VERSION"
+        echo "Usage: $(basename $0) OLD_VERSION NEW_VERSION"
 	exit 1
 }
 
-check_startup()
+check_startup() {
 	if [ $(id -u) -ne 0 ]; then
-		echo "$0: not invoked as root; bailing"
+		echo "$(basename $0): not invoked as root; bailing"
 	        exit 1
 	fi
 
 	# ${param:-} expands to empty string if unset
 
 	if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
-		usage
+		usage $@
 	fi
 }
 
@@ -35,7 +35,7 @@ call_mysqldump() {
 	mysqldump -u root -p $DBNAME | pv -W > /var/backups/$DBNAME/pre-$DBNAME-$OLDVER-to-$NEWVER-$NOW.sql
 }
 
-call_mysqldump() {
+call_pgdump() {
 	UNIX_USER=$1
 	DBNAME=$2
 	mkdir -p /var/backups/$DBNAME

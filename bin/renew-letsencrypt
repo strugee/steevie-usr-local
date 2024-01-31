@@ -76,22 +76,24 @@ fi
 
 # TODO: consider migrating this to --renew-hook
 
+FAILED=0
+
 if [ $MAIN_CERT_UNIQUEID != $(cert_identity strugee.net) ]; then
 	echo "Rebuilding ejabberd certificates due to updated certificate."
 	generate-ejabberd-bundle
 	echo "Rebuilding Cockpit certificates due to updated certificate."
 	generate-cockpit-bundle
 	echo "Restarting ejabberd due to updated certificate."
-	systemctl restart ejabberd
+	systemctl restart ejabberd || FAILED=1
 	echo "Restarting Cockpit due to updated certificate."
-	systemctl restart cockpit
+	systemctl restart cockpit || FAILED=1
 fi
 
 if [ $MAIL_CERT_UNIQUEID != $(cert_identity mail.strugee.net) ]; then
 	echo "Restarting Postfix due to updated certificate."
-	systemctl restart postfix
+	systemctl restart postfix || FAILED=1
 	echo "Restarting Dovecot due to updated certificate."
-	systemctl restart dovecot
+	systemctl restart dovecot || FAILED=1
 fi
 
 if [ $ZNC_CERT_UNIQUEID != $(cert_identity znc.strugee.net) ]; then
@@ -101,3 +103,5 @@ if [ $ZNC_CERT_UNIQUEID != $(cert_identity znc.strugee.net) ]; then
 fi
 
 etckeeper commit "Renew and rebuild TLS certificates" || true
+
+exit $FAILED

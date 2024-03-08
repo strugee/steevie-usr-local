@@ -91,7 +91,8 @@ get_homedir_caches() {
 
 invoke_borg() {
 	log_info 'invoking borg'
-	borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
+	# 3, for the idle I/O class - otherwise Borg starves the system and completely tanks perf
+	ionice -c 3 borg create $BORG_FLAGS --progress --stats $BORG_STD_FLAGS \
 	--exclude root/.gdfuse/default/cache \
 	$(for i in $(get_homedir_caches | sed 's;^/;;'); do printf -- "--exclude $i "; done) \
 	--exclude var/cache \

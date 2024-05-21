@@ -1,4 +1,4 @@
-.Dd August 5, 2020
+.Dd May 21, 2024
 .Dt UPDATESRVDEFAULT 8
 .Os steevie
 .Sh NAME
@@ -14,10 +14,10 @@ in
 runs
 .Xr git-pull 1
 to update the git clone in
-.Pa /srv/http/default ,
-verifying commits'
+.Pa /srv/http/default .
+It used to verify commits'
 .Xr gpg 1
-signatures as it does so.
+signatures as it did so, but this is commented out as of May 2024.
 In order to do this, it sets up a temporary keyring inside a directory in
 .Pa /tmp .
 It also takes pains to avoid running network-facing code as the superuser - it is run mostly as the nobody user instead.

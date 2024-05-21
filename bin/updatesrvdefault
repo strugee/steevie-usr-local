@@ -6,8 +6,8 @@ trap 'echo caught an error\; running \`gpg --refresh-keys\` as root may resolve 
 KEY=C46D8E7A3F13AD1C8EC6784843BF769C4ACA8B96
 TMPDIR=$(sudo -u nobody mktemp -d)
 
-gpg --export $KEY | sudo -u nobody gpg --homedir $TMPDIR --import
-gpg --export-ownertrust | grep $KEY | sudo -u nobody  gpg --homedir $TMPDIR --import-ownertrust
+#gpg --export $KEY | sudo -u nobody gpg --homedir $TMPDIR --import
+#gpg --export-ownertrust | grep $KEY | sudo -u nobody  gpg --homedir $TMPDIR --import-ownertrust
 
 cd /srv/http/default
 chown -R nobody .

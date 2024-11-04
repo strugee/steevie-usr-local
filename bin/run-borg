@@ -67,7 +67,7 @@ srv \
 root \
 var \
 opt \
-/boot \
+/boot/ \
 lost+found \
 vmlinuz* \
 initrd.img* \

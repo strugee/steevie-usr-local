@@ -12,7 +12,7 @@ NOW=$(now)
 
 usage() {
 	exec 1>&2
-        echo "Usage: $(basename $0) OLD_VERSION NEW_VERSION"
+	echo "Usage: $(basename $0) OLD_VERSION NEW_VERSION"
 	exit 1
 }
 

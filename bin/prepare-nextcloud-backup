@@ -2,9 +2,30 @@
 
 set -eu
 
+BACKUPS_USAGE_OLDVER_OPTIONAL=
+. $(dirname $0)/../lib/common/functions.sh
 . $(dirname $0)/../lib/common/backups.sh
 
+check_root
 check_startup $@
+
+occ_version() {
+	sudo -u www-data php -f /srv/http/nextcloud/occ -- --version
+}
+
+if [ -z "${2:-}" ]; then
+	echo branch
+	if ! occ_version | egrep -q '^Nextcloud [[:digit:].]+$'; then
+		die 'failed to parse `occ --version` output; please adjust script'
+	fi
+
+	set "$(occ_version | cut -d' ' -f2)" "$1"
+	echo Autodetected Nextcloud $(occ_version) as the current version.
+fi
+
+echo $@
+
+backups_init $@
 
 call_mysqldump nextcloud
 take_zfs_snapshot rpool/srv/nextcloud rpool/var/mysql

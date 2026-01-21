@@ -6,13 +6,21 @@ now() {
 	date +%s | tr -d '\n'
 }
 
-OLDVER=$1
-NEWVER=$2
-NOW=$(now)
+backups_init() {
+	OLDVER=$1
+	NEWVER=$2
+	NOW=$(now)
+}
 
 usage() {
 	exec 1>&2
-	echo "Usage: $(basename $0) OLD_VERSION NEW_VERSION"
+	if ! [ -z ${BACKUPS_USAGE_OLDVER_OPTIONAL+x} ]; then
+		oldver_string='[OLD_VERSION]'
+	else
+		oldver_string='OLD_VERSION'
+	fi
+
+	echo "Usage: $(basename $0) $oldver_string NEW_VERSION"
 	exit 1
 }
 
@@ -28,7 +36,11 @@ check_startup() {
 
 	# ${param:-} expands to empty string if unset
 
-	if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
+	if [ -z "${1:-}" ]; then
+		usage $@
+	fi
+
+	if [ -z "${BACKUPS_USAGE_OLDVER_OPTIONAL+x}" ] && [ -z "${2:-}" ]; then
 		usage $@
 	fi
 }

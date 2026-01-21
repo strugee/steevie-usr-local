@@ -5,6 +5,7 @@ set -eu
 . $(dirname $0)/../lib/common/backups.sh
 
 check_startup $@
+backups_init $@
 
 call_pgdump matrix-synapse synapse
 

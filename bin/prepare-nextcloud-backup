@@ -14,7 +14,6 @@ occ_version() {
 }
 
 if [ -z "${2:-}" ]; then
-	echo branch
 	if ! occ_version | egrep -q '^Nextcloud [[:digit:].]+$'; then
 		die 'failed to parse `occ --version` output; please adjust script'
 	fi
@@ -22,8 +21,6 @@ if [ -z "${2:-}" ]; then
 	set "$(occ_version | cut -d' ' -f2)" "$1"
 	echo Autodetected Nextcloud $(occ_version) as the current version.
 fi
-
-echo $@
 
 backups_init $@
 

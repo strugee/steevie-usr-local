@@ -81,9 +81,13 @@ ensure_args() {
 	fi
 }
 
+die() {
+	echo $(basename $0): "$@" >&2
+	exit 1
+}
+
 test_is_root() {
 	if [ $(id -u) != 0 ]; then
-		echo $(basename $0): need to be root >&2
-		exit 1
+		die need to be root >&2
 	fi
 }

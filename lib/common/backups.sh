@@ -16,11 +16,15 @@ usage() {
 	exit 1
 }
 
-check_startup() {
+check_root() {
 	if [ $(id -u) -ne 0 ]; then
 		echo "$(basename $0): not invoked as root; bailing"
 	        exit 1
 	fi
+}
+
+check_startup() {
+	check_root
 
 	# ${param:-} expands to empty string if unset
 
